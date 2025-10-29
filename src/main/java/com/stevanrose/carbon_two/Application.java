@@ -1,13 +1,13 @@
-package com.stevanrose.spring_boot_carbon_two;
+package com.stevanrose.carbon_two;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringBootCarbonTwoApplication {
+public class Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpringBootCarbonTwoApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }
