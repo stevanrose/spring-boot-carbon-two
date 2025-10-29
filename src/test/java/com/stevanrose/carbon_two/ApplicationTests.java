@@ -1,10 +1,10 @@
-package com.stevanrose.spring_boot_carbon_two;
+package com.stevanrose.carbon_two;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringBootCarbonTwoApplicationTests {
+class ApplicationTests {
 
 	@Test
 	void contextLoads() {

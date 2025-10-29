@@ -1,0 +1,30 @@
+volumes:
+  carbon_two_backend:
+    driver: local
+services:
+  carbon_one_backend:
+    image: postgres
+    volumes:
+      - carbon_two_backend:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: carbon_two_backend_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5490:5432"
+    networks:
+      - carbon-two-backend-network
+  pgadmin:
+    container_name: carbon_two_backend_db_admin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5390:80"
+    networks:
+      - carbon-two-backend-network
+networks:
+  carbon-one-backend-network:
+    name: carbon-two-backend-network

@@ -1,0 +1,32 @@
+server:
+  port: 8090
+  servlet:
+    context-path: /${spring.application.name}
+
+spring:
+  application:
+    name: carbon_two
+  datasource:
+    url: jdbc:postgresql://localhost:5490/carbon_two_backend_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        ddl-auto: update
+      properties:
+        hibernate:
+          format_sql: true
+          jdbc:
+            time_zone: UTC
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
