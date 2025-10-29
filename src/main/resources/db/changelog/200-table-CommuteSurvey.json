@@ -1,0 +1,130 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "table-CommuteSurvey",
+        "author": "handwritten",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "CommuteSurvey",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "UUID",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "uuid_generate_v4()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "employeeId",
+                    "type": "UUID",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "surveyDate",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "primaryMode",
+                    "type": "commutemode",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "oneWayDistanceKm",
+                    "type": "DOUBLE PRECISION",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "daysPerWeekCommuting",
+                    "type": "INTEGER",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "carOccupancy",
+                    "type": "INTEGER"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "notes",
+                    "type": "TEXT"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "createdAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "now()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "updatedAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "addPrimaryKey": {
+              "tableName": "CommuteSurvey",
+              "columnNames": "id",
+              "constraintName": "pk_CommuteSurvey_id"
+            }
+          },
+          {
+            "createIndex": {
+              "tableName": "CommuteSurvey",
+              "indexName": "idx_CommuteSurvey_employeeId_surveyDate",
+              "columns": [
+                {
+                  "column": {
+                    "name": "employeeId"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "surveyDate"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

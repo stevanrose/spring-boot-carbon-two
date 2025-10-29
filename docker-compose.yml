@@ -2,7 +2,7 @@ volumes:
   carbon_two_backend:
     driver: local
 services:
-  carbon_one_backend:
+  carbon_two_backend:
     image: postgres
     volumes:
       - carbon_two_backend:/var/lib/postgresql/data
@@ -26,5 +26,5 @@ services:
     networks:
       - carbon-two-backend-network
 networks:
-  carbon-one-backend-network:
+  carbon-two-backend-network:
     name: carbon-two-backend-network

@@ -1,0 +1,101 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "table-Office",
+        "author": "handwritten",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "Office",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "UUID",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "uuid_generate_v4()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "code",
+                    "type": "TEXT",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "name",
+                    "type": "TEXT",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "address",
+                    "type": "TEXT"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "gridRegionCode",
+                    "type": "TEXT",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "floorAreaM2",
+                    "type": "DOUBLE PRECISION"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "createdAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "now()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "updatedAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "addPrimaryKey": {
+              "tableName": "Office",
+              "columnNames": "id",
+              "constraintName": "pk_Office_id"
+            }
+          },
+          {
+            "addUniqueConstraint": {
+              "tableName": "Office",
+              "columnNames": "code",
+              "constraintName": "uq_Office_code"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

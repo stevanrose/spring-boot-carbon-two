@@ -1,0 +1,42 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "foreign-keys",
+        "author": "handwritten",
+        "changes": [
+          {
+            "addForeignKeyConstraint": {
+              "baseTableName": "Employee",
+              "baseColumnNames": "officeId",
+              "referencedTableName": "Office",
+              "referencedColumnNames": "id",
+              "constraintName": "fk_Employee_officeId__Office_id",
+              "onDelete": "SET NULL"
+            }
+          },
+          {
+            "addForeignKeyConstraint": {
+              "baseTableName": "CommuteSurvey",
+              "baseColumnNames": "employeeId",
+              "referencedTableName": "Employee",
+              "referencedColumnNames": "id",
+              "constraintName": "fk_CommuteSurvey_employeeId__Employee_id",
+              "onDelete": "CASCADE"
+            }
+          },
+          {
+            "addForeignKeyConstraint": {
+              "baseTableName": "OfficeEnergyStatement",
+              "baseColumnNames": "officeId",
+              "referencedTableName": "Office",
+              "referencedColumnNames": "id",
+              "constraintName": "fk_OfficeEnergyStatement_officeId__Office_id",
+              "onDelete": "CASCADE"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
