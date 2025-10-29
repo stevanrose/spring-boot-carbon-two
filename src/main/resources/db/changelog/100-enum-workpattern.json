@@ -1,0 +1,18 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "enum-workpattern",
+        "author": "handwritten",
+        "changes": [
+          {
+            "sql": {
+              "splitStatements": false,
+              "sql": "CREATE TYPE workpattern AS ENUM ('office', 'remote', 'hybrid');"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

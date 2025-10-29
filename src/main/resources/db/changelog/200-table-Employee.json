@@ -1,0 +1,116 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "table-Employee",
+        "author": "handwritten",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "Employee",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "UUID",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "uuid_generate_v4()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "email",
+                    "type": "TEXT",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "department",
+                    "type": "TEXT"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "employmentType",
+                    "type": "employmenttype",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "'full_time'::employmenttype"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "workPattern",
+                    "type": "workpattern",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "'hybrid'::workpattern"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "officeId",
+                    "type": "UUID"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "createdAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "now()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "updatedAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "addPrimaryKey": {
+              "tableName": "Employee",
+              "columnNames": "id",
+              "constraintName": "pk_Employee_id"
+            }
+          },
+          {
+            "addUniqueConstraint": {
+              "tableName": "Employee",
+              "columnNames": "email",
+              "constraintName": "uq_Employee_email"
+            }
+          },
+          {
+            "createIndex": {
+              "tableName": "Employee",
+              "indexName": "idx_Employee_officeId",
+              "columns": [
+                {
+                  "column": {
+                    "name": "officeId"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

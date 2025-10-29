@@ -1,0 +1,18 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "enum-employmenttype",
+        "author": "handwritten",
+        "changes": [
+          {
+            "sql": {
+              "splitStatements": false,
+              "sql": "CREATE TYPE employmenttype AS ENUM ('full_time', 'part_time', 'contract');"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

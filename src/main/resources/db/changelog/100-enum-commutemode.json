@@ -1,0 +1,18 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "enum-commutemode",
+        "author": "handwritten",
+        "changes": [
+          {
+            "sql": {
+              "splitStatements": false,
+              "sql": "CREATE TYPE commutemode AS ENUM ('car', 'bike', 'train', 'walk');"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

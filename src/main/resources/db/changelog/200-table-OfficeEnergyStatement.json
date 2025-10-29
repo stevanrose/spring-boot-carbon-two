@@ -1,0 +1,142 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "table-OfficeEnergyStatement",
+        "author": "handwritten",
+        "changes": [
+          {
+            "createTable": {
+              "tableName": "OfficeEnergyStatement",
+              "columns": [
+                {
+                  "column": {
+                    "name": "id",
+                    "type": "UUID",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "uuid_generate_v4()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "officeId",
+                    "type": "UUID",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "year",
+                    "type": "INTEGER",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "month",
+                    "type": "INTEGER",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "electricityKwh",
+                    "type": "DOUBLE PRECISION",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                },
+                {
+                  "column": {
+                    "name": "heatingFuelType",
+                    "type": "heatingfueltype",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "'none'::heatingfueltype"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "heatingEnergyKwh",
+                    "type": "DOUBLE PRECISION"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "renewablePpasKwh",
+                    "type": "DOUBLE PRECISION"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "notes",
+                    "type": "TEXT"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "createdAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    },
+                    "defaultValueComputed": "now()"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "updatedAt",
+                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "constraints": {
+                      "nullable": false
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "addPrimaryKey": {
+              "tableName": "OfficeEnergyStatement",
+              "columnNames": "id",
+              "constraintName": "pk_OfficeEnergyStatement_id"
+            }
+          },
+          {
+            "createIndex": {
+              "tableName": "OfficeEnergyStatement",
+              "indexName": "idx_OfficeEnergyStatement_officeId_year_month",
+              "columns": [
+                {
+                  "column": {
+                    "name": "officeId"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "year"
+                  }
+                },
+                {
+                  "column": {
+                    "name": "month"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
