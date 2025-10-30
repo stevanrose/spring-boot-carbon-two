@@ -9,6 +9,7 @@ import java.util.UUID;
 public interface OfficeRepository extends JpaRepository<Office, UUID> {
 
     Optional<Office> findByCodeIgnoreCase(String code);
+
     boolean existsByCodeIgnoreCase(String code);
 
 }

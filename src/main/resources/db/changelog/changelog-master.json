@@ -2,7 +2,7 @@
   "databaseChangeLog": [
     {
       "include": {
-        "file": "db/changelog/000-extensions.json",
+        "file": "db/changelog/000-extensions.json"
       }
     },
     {
