@@ -16,12 +16,9 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        ddl-auto: update
-      properties:
-        hibernate:
-          format_sql: true
-          jdbc:
-            time_zone: UTC
+        format_sql: true
+        jdbc:
+          time_zone: UTC
   liquibase:
     change-log: classpath:db/changelog/changelog-master.json
 
