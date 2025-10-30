@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/offices")
 @RequiredArgsConstructor
@@ -35,13 +37,24 @@ public class OfficeController {
         return PageResponse.of(page);
     }
 
-    @PostMapping
-    public ResponseEntity<OfficeResponse> create(@Valid @RequestBody OfficeRequest request, UriComponentsBuilder uri) {
+    @GetMapping("/{id}")
+    @Operation(summary = "Get Office by ID", description = "Retrieve a specific office by its ID.")
+    @ApiResponse(responseCode = "200", description = "Office found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OfficeResponse.class)))
+    @ApiResponse(responseCode = "404", description = "Office not found", content = @Content(schema = @Schema(implementation = Void.class)))
+    public OfficeResponse getOffice(@PathVariable UUID id) {
+        return officeMapper.toResponse(officeService.findById(id));
+    }
 
+    @PostMapping
+    @Operation(summary = "Create Office", description = "Create a new office.")
+    @ApiResponse(responseCode = "201", description = "Office created", content = @Content(mediaType = "application/json", schema = @Schema(implementation = OfficeResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "409", description = "Office already exists", content = @Content(schema = @Schema(implementation = Void.class)))
+    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(schema = @Schema(implementation = Void.class)))
+    public ResponseEntity<OfficeResponse> create(@Valid @RequestBody OfficeRequest request, UriComponentsBuilder uri) {
         Office saved = officeService.create(officeMapper.toEntity(request));
         var response = officeMapper.toResponse(saved);
         var location = uri.path("/api/offices/{id}").buildAndExpand(saved.getId()).toUri();
         return ResponseEntity.created(location).body(response);
-
     }
 }
