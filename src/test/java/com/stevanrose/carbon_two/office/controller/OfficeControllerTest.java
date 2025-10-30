@@ -1,7 +1,6 @@
 package com.stevanrose.carbon_two.office.controller;
 
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
-import com.stevanrose.carbon_two.office.web.dto.OfficeRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +25,12 @@ class OfficeControllerTest {
     @BeforeEach
     void setUp() {
         officeRepository.deleteAll();
+
     }
 
     @SneakyThrows
     @Test
     void shouldCreateOffice() {
-
 
         String reqJson = """
                     {
@@ -44,8 +43,8 @@ class OfficeControllerTest {
                 """;
 
         mockMvc.perform(post("/api/offices")
-                .contentType("application/json")
-                .content(reqJson))
+                        .contentType("application/json")
+                        .content(reqJson))
                 .andExpect(status().isCreated());
 
     }

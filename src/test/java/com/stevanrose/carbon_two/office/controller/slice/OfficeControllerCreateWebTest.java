@@ -1,5 +1,6 @@
-package com.stevanrose.carbon_two.office.controller;
+package com.stevanrose.carbon_two.office.controller.slice;
 
+import com.stevanrose.carbon_two.office.controller.OfficeController;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.service.OfficeService;
 import com.stevanrose.carbon_two.office.web.dto.OfficeRequest;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = OfficeController.class)
-class OfficeControllerWebTest {
+class OfficeControllerCreateWebTest {
 
     @Autowired
     MockMvc mvc;
@@ -47,12 +48,7 @@ class OfficeControllerWebTest {
                   }
                 """;
 
-        var entity = Office.builder()
-                .id(UUID.randomUUID())
-                .code("LON-01")
-                .name("London HQ")
-                .gridRegionCode("GB-LDN")
-                .build();
+        var entity = Office.builder().id(UUID.randomUUID()).code("LON-01").name("London HQ").gridRegionCode("GB-LDN").build();
 
         var resp = new OfficeResponse();
         resp.setId(entity.getId());
@@ -62,8 +58,8 @@ class OfficeControllerWebTest {
         when(officeMapper.toResponse(entity)).thenReturn(resp);
 
         mvc.perform(post("/api/offices")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(reqJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(reqJson))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", Matchers.matchesRegex(".*/api/offices/.+")))
                 .andExpect(jsonPath("$.id").value(entity.getId().toString()));

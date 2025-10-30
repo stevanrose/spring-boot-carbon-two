@@ -3,6 +3,8 @@ package com.stevanrose.carbon_two.office.service;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class OfficeService {
 
     private final OfficeRepository officeRepository;
+
+    @Transactional(readOnly = true)
+    public Page<Office> list(Pageable pageable) {
+        return officeRepository.findAll(pageable);
+    }
 
     @Transactional
     public Office create(Office office) {
