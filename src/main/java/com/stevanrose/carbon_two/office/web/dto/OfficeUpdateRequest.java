@@ -1,18 +1,12 @@
 package com.stevanrose.carbon_two.office.web.dto;
 
-import java.time.Instant;
-import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class OfficeResponse {
-
-  private UUID id;
+public class OfficeUpdateRequest {
   private String code;
   private String name;
   private String address;
   private String gridRegionCode;
   private Double floorAreaM2;
-  private Instant createdAt;
-  private Instant updatedAt;
 }
