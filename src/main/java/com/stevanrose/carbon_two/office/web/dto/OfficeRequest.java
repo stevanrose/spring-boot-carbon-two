@@ -6,17 +6,13 @@ import lombok.Data;
 @Data
 public class OfficeRequest {
 
-    @NotBlank
-    private String code;
+  @NotBlank private String code;
 
-    @NotBlank
-    private String name;
+  @NotBlank private String name;
 
-    private String address;
+  private String address;
 
-    @NotBlank
-    private String gridRegionCode;
+  @NotBlank private String gridRegionCode;
 
-    private Double floorAreaM2;
-
+  private Double floorAreaM2;
 }
