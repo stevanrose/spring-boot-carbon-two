@@ -1,14 +1,17 @@
-package com.stevanrose.carbon_two.office.controller.integration;
+package com.stevanrose.carbon_two.officeenergystatement.controller.integration;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
-import com.stevanrose.carbon_two.office.web.dto.OfficeRequest;
+import com.stevanrose.carbon_two.officeenergystatement.domain.HeatingFuelType;
+import com.stevanrose.carbon_two.officeenergystatement.repository.OfficeEnergyStatementRepository;
+import com.stevanrose.carbon_two.officeenergystatement.web.dto.OfficeEnergyStatementRequest;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +22,23 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class OfficeControllerUpdateIntegrationTest {
+public class OfficeEnergyStatementCreateIntegrationTest {
 
   @Autowired private MockMvc mvc;
 
   @Autowired private OfficeRepository officeRepository;
+  @Autowired private OfficeEnergyStatementRepository officeEnergyStatementRepository;
   @Autowired private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
+    officeEnergyStatementRepository.deleteAll();
     officeRepository.deleteAll();
   }
 
   @SneakyThrows
   @Test
-  void should_update_office() {
+  void should_create_office_energy_statement() {
 
     var office =
         officeRepository.save(
@@ -45,23 +50,27 @@ class OfficeControllerUpdateIntegrationTest {
                 .floorAreaM2(2500.00)
                 .build());
 
-    OfficeRequest request = new OfficeRequest();
-    request.setCode("LON-02");
-    request.setName("London Office");
-    request.setAddress("Updated Address");
-    request.setGridRegionCode("GB-LDN-1");
-    request.setFloorAreaM2(1500.00);
+    OfficeEnergyStatementRequest request = new OfficeEnergyStatementRequest();
+    request.setYear(2025);
+    request.setMonth(10);
+    request.setElectricityKwh(1234.0);
+    request.setHeatingFuelType(HeatingFuelType.NONE);
 
     mvc.perform(
-            put("/api/offices/{id}", office.getId())
+            post("/api/offices/{id}/energy-statements", office.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(office.getId().toString()))
-        .andExpect(jsonPath("$.code").value(request.getCode()))
-        .andExpect(jsonPath("$.name").value(request.getName()))
-        .andExpect(jsonPath("$.address").value(request.getAddress()))
-        .andExpect(jsonPath("$.gridRegionCode").value(request.getGridRegionCode()))
-        .andExpect(jsonPath("$.floorAreaM2").value(request.getFloorAreaM2()));
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.officeId").value(office.getId().toString()))
+        .andExpect(jsonPath("$.year").value(2025))
+        .andExpect(jsonPath("$.month").value(10))
+        .andExpect(jsonPath("$.electricityKwh").value(1234.0))
+        .andExpect(jsonPath("$.heatingFuelType").value("NONE"));
+  }
+
+  @AfterEach
+  void tearDown() {
+    officeEnergyStatementRepository.deleteAll();
+    officeRepository.deleteAll();
   }
 }
