@@ -93,6 +93,15 @@ public class OfficeController {
 
   @PutMapping("/{id}")
   @Operation(summary = "Update an office (full)")
+  @ApiResponse(responseCode = "200", description = "Office updated successfully")
+  @ApiResponse(
+      responseCode = "400",
+      description = "Invalid input",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  @ApiResponse(
+      responseCode = "404",
+      description = "Office not found",
+      content = @Content(schema = @Schema(implementation = Void.class)))
   public OfficeResponse put(@PathVariable UUID id, @Valid @RequestBody OfficeRequest body) {
     OfficeUpdateRequest update = new OfficeUpdateRequest();
     update.setCode(body.getCode());
@@ -102,5 +111,22 @@ public class OfficeController {
     update.setFloorAreaM2(body.getFloorAreaM2());
 
     return officeMapper.toResponse(officeService.update(id, update));
+  }
+
+  @DeleteMapping("/{id}")
+  @Operation(
+      summary = "Delete an office by ID",
+      description = "Delete a specific office by its ID.")
+  @ApiResponse(
+      responseCode = "204",
+      description = "Office deleted successfully",
+      content = @Content)
+  @ApiResponse(
+      responseCode = "404",
+      description = "Office not found",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  public ResponseEntity<Void> deleteOffice(@PathVariable UUID id) {
+    officeService.delete(id);
+    return ResponseEntity.noContent().build();
   }
 }

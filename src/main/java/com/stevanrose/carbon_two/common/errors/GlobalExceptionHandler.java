@@ -15,5 +15,11 @@ public class GlobalExceptionHandler {
     return new ErrorBody("NOT_FOUND", ex.getMessage());
   }
 
+  @ExceptionHandler(IllegalStateException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ErrorBody handleConflict(IllegalStateException ex) {
+    return new ErrorBody("CONFLICT", ex.getMessage());
+  }
+
   public record ErrorBody(String code, String message) {}
 }
