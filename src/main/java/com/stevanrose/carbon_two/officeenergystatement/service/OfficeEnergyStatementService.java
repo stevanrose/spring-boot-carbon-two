@@ -8,6 +8,8 @@ import com.stevanrose.carbon_two.officeenergystatement.web.dto.mapper.OfficeEner
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,16 @@ public class OfficeEnergyStatementService {
   private final OfficeRepository officeRepository;
   private final OfficeEnergyStatementRepository officeEnergyStatementRepository;
   private final OfficeEnergyStatementMapper officeEnergyStatementMapper;
+
+  @Transactional(readOnly = true)
+  public Page<OfficeEnergyStatement> listByOfficeId(UUID officeId, Pageable pageable) {
+
+    if (!officeRepository.existsById(officeId)) {
+      throw new EntityNotFoundException("Office not found with id: " + officeId);
+    }
+
+    return officeEnergyStatementRepository.findByOfficeId(officeId, pageable);
+  }
 
   @Transactional
   public OfficeEnergyStatement create(UUID officeId, OfficeEnergyStatementRequest request) {
