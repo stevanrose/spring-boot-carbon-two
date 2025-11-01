@@ -1,4 +1,4 @@
-package com.stevanrose.carbon_two.officeenergystatement.controller.slice;
+package com.stevanrose.carbon_two.energystatement.controller.slice;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,13 +9,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.stevanrose.carbon_two.common.errors.GlobalExceptionHandler;
+import com.stevanrose.carbon_two.energystatement.controller.EnergyStatementController;
+import com.stevanrose.carbon_two.energystatement.domain.EnergyStatement;
+import com.stevanrose.carbon_two.energystatement.service.EnergyStatementService;
+import com.stevanrose.carbon_two.energystatement.web.dto.mapper.EnergyStatementMapper;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.service.OfficeService;
 import com.stevanrose.carbon_two.office.web.dto.mapper.OfficeMapper;
-import com.stevanrose.carbon_two.officeenergystatement.controller.OfficeEnergyStatementController;
-import com.stevanrose.carbon_two.officeenergystatement.domain.OfficeEnergyStatement;
-import com.stevanrose.carbon_two.officeenergystatement.service.OfficeEnergyStatementService;
-import com.stevanrose.carbon_two.officeenergystatement.web.dto.mapper.OfficeEnergyStatementMapper;
 import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -27,11 +27,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = OfficeEnergyStatementController.class)
-class OfficeEnergyStatementControllerCreateWebTest {
+@WebMvcTest(controllers = EnergyStatementController.class)
+class EnergyStatementControllerCreateWebTest {
 
   @Autowired MockMvc mvc;
-  @Autowired OfficeEnergyStatementService service;
+  @Autowired
+  EnergyStatementService service;
 
   @SneakyThrows
   @Test
@@ -40,7 +41,7 @@ class OfficeEnergyStatementControllerCreateWebTest {
     UUID officeId = UUID.randomUUID();
     UUID id = UUID.randomUUID();
     var entity =
-        OfficeEnergyStatement.builder()
+        EnergyStatement.builder()
             .id(id)
             .office(Office.builder().id(officeId).build())
             .year(2025)
@@ -76,8 +77,8 @@ class OfficeEnergyStatementControllerCreateWebTest {
   static class MockConfig {
 
     @Bean
-    OfficeEnergyStatementService service() {
-      return mock(OfficeEnergyStatementService.class);
+    EnergyStatementService service() {
+      return mock(EnergyStatementService.class);
     }
 
     @Bean
@@ -86,8 +87,8 @@ class OfficeEnergyStatementControllerCreateWebTest {
     }
 
     @Bean
-    OfficeEnergyStatementMapper mapper() {
-      return Mappers.getMapper(OfficeEnergyStatementMapper.class);
+    EnergyStatementMapper mapper() {
+      return Mappers.getMapper(EnergyStatementMapper.class);
     }
 
     @Bean

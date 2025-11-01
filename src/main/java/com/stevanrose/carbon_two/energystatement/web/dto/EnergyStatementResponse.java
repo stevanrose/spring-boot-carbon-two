@@ -1,12 +1,12 @@
-package com.stevanrose.carbon_two.officeenergystatement.web.dto;
+package com.stevanrose.carbon_two.energystatement.web.dto;
 
-import com.stevanrose.carbon_two.officeenergystatement.domain.HeatingFuelType;
+import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Data;
 
 @Data
-public class OfficeEnergyStatementResponse {
+public class EnergyStatementResponse {
   private UUID id;
   private UUID officeId;
   private Integer year;

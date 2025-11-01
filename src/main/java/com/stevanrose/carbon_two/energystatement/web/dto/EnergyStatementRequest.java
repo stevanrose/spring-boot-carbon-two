@@ -1,6 +1,6 @@
-package com.stevanrose.carbon_two.officeenergystatement.web.dto;
+package com.stevanrose.carbon_two.energystatement.web.dto;
 
-import com.stevanrose.carbon_two.officeenergystatement.domain.HeatingFuelType;
+import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +8,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Data
-public class OfficeEnergyStatementRequest {
+public class EnergyStatementRequest {
 
   @Min(1900)
   @Max(3000)
