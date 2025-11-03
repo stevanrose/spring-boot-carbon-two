@@ -23,6 +23,16 @@ public class EnergyStatementService {
   private final EnergyStatementMapper energyStatementMapper;
 
   @Transactional(readOnly = true)
+  public EnergyStatement findByIdAndOfficeId(UUID id, UUID officeId) {
+    return energyStatementRepository
+        .findByIdAndOfficeId(id, officeId)
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "Energy statement not found with id: " + id + " for office id: " + officeId));
+  }
+
+  @Transactional(readOnly = true)
   public Page<EnergyStatement> listByOfficeId(UUID officeId, Pageable pageable) {
 
     if (!officeRepository.existsById(officeId)) {
