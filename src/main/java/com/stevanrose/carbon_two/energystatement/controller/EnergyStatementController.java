@@ -29,6 +29,18 @@ public class EnergyStatementController {
   private final EnergyStatementService service;
   private final EnergyStatementMapper mapper;
 
+  @GetMapping("/{id}")
+  @Operation(summary = "Get office energy statement by ID")
+  @ApiResponse(responseCode = "200", description = "Office energy statement retrieved")
+  @ApiResponse(responseCode = "404", description = "Office or energy statement not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<EnergyStatementResponse> getById(
+      @PathVariable UUID officeId, @PathVariable UUID id) {
+    var entity = service.findByIdAndOfficeId(id, officeId);
+    var response = mapper.toResponse(entity);
+    return ResponseEntity.ok(response);
+  }
+
   @GetMapping
   @Operation(summary = "List office energy statements")
   @ApiResponse(responseCode = "200", description = "List of office energy statements retrieved")
