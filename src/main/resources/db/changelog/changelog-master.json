@@ -49,6 +49,11 @@
       "include": {
         "file": "db/changelog/300-foreign-keys.json"
       }
+    },
+    {
+      "include": {
+        "file": "db/changelog/400-uq-energy-statement-office-year-month.json"
+      }
     }
   ]
 }

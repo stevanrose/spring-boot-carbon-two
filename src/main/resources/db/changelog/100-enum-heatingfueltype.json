@@ -3,7 +3,7 @@
     {
       "changeSet": {
         "id": "enum-heatingfueltype",
-        "author": "handwritten",
+        "author": "Steve Rose",
         "changes": [
           {
             "sql": {

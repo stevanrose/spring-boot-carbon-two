@@ -4,6 +4,7 @@ import com.stevanrose.carbon_two.energystatement.domain.EnergyStatement;
 import com.stevanrose.carbon_two.energystatement.repository.EnergyStatementRepository;
 import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementRequest;
 import com.stevanrose.carbon_two.energystatement.web.dto.mapper.EnergyStatementMapper;
+import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
@@ -21,6 +22,8 @@ public class EnergyStatementService {
   private final OfficeRepository officeRepository;
   private final EnergyStatementRepository energyStatementRepository;
   private final EnergyStatementMapper energyStatementMapper;
+
+  public record UpsertResult(EnergyStatement entity, boolean created) {}
 
   @Transactional(readOnly = true)
   public EnergyStatement findByIdAndOfficeId(UUID id, UUID officeId) {
@@ -64,5 +67,28 @@ public class EnergyStatementService {
 
     var officeEnergyStatement = energyStatementMapper.toEntity(request, office);
     return energyStatementRepository.save(officeEnergyStatement);
+  }
+
+  @Transactional
+  public UpsertResult upsert(UUID officeId, int year, int month, EnergyStatementRequest request) {
+    Office office =
+        officeRepository
+            .findById(officeId)
+            .orElseThrow(() -> new EntityNotFoundException("Office not found: " + officeId));
+
+    request.setYear(year);
+    request.setMonth(month);
+
+    var existing = energyStatementRepository.findByOfficeIdAndYearAndMonth(officeId, year, month);
+    if (existing.isPresent()) {
+      var entity = existing.get();
+      energyStatementMapper.update(entity, request);
+      var saved = energyStatementRepository.save(entity);
+      return new UpsertResult(saved, false);
+    } else {
+      var entity = energyStatementMapper.toEntity(request, office);
+      var saved = energyStatementRepository.save(entity);
+      return new UpsertResult(saved, true);
+    }
   }
 }

@@ -1,0 +1,19 @@
+{
+  "databaseChangeLog": [
+    {
+      "changeSet": {
+        "id": "uq_officeenergystatement_office_year_month",
+        "author": "Steve Rose",
+        "changes": [
+          {
+            "addUniqueConstraint": {
+              "tableName": "OfficeEnergyStatement",
+              "columnNames": "officeId, year, month",
+              "constraintName": "uq_officeenergystatement_office_year_month"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
