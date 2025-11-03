@@ -1,4 +1,4 @@
-package com.stevanrose.carbon_two.officeenergystatement.domain;
+package com.stevanrose.carbon_two.energystatement.domain;
 
 import com.stevanrose.carbon_two.office.domain.Office;
 import jakarta.persistence.*;
@@ -24,7 +24,7 @@ import org.hibernate.annotations.UuidGenerator;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OfficeEnergyStatement {
+public class EnergyStatement {
 
   @Id
   @GeneratedValue

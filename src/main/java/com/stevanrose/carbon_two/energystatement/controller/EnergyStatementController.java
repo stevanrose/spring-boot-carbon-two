@@ -1,10 +1,10 @@
-package com.stevanrose.carbon_two.officeenergystatement.controller;
+package com.stevanrose.carbon_two.energystatement.controller;
 
 import com.stevanrose.carbon_two.common.paging.PageResponse;
-import com.stevanrose.carbon_two.officeenergystatement.service.OfficeEnergyStatementService;
-import com.stevanrose.carbon_two.officeenergystatement.web.dto.OfficeEnergyStatementRequest;
-import com.stevanrose.carbon_two.officeenergystatement.web.dto.OfficeEnergyStatementResponse;
-import com.stevanrose.carbon_two.officeenergystatement.web.dto.mapper.OfficeEnergyStatementMapper;
+import com.stevanrose.carbon_two.energystatement.service.EnergyStatementService;
+import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementRequest;
+import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementResponse;
+import com.stevanrose.carbon_two.energystatement.web.dto.mapper.EnergyStatementMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
@@ -24,17 +24,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("api/offices/{officeId}/energy-statements")
 @RequiredArgsConstructor
-public class OfficeEnergyStatementController {
+public class EnergyStatementController {
 
-  private final OfficeEnergyStatementService service;
-  private final OfficeEnergyStatementMapper mapper;
+  private final EnergyStatementService service;
+  private final EnergyStatementMapper mapper;
 
   @GetMapping
   @Operation(summary = "List office energy statements")
   @ApiResponse(responseCode = "200", description = "List of office energy statements retrieved")
   @ApiResponse(responseCode = "404", description = "Office not found")
   @ApiResponse(responseCode = "500", description = "Internal server error")
-  public PageResponse<OfficeEnergyStatementResponse> listByOfficeId(
+  public PageResponse<EnergyStatementResponse> listByOfficeId(
       @PathVariable UUID officeId,
       @ParameterObject
           @PageableDefault(size = 20)
@@ -44,7 +44,7 @@ public class OfficeEnergyStatementController {
           })
           Pageable pageable) {
 
-    Page<OfficeEnergyStatementResponse> page =
+    Page<EnergyStatementResponse> page =
         service.listByOfficeId(officeId, pageable).map(mapper::toResponse);
 
     return PageResponse.of(page);
@@ -60,9 +60,9 @@ public class OfficeEnergyStatementController {
       responseCode = "409",
       description = "Energy statement already exists for the given month and year")
   @ApiResponse(responseCode = "500", description = "Internal server error")
-  public ResponseEntity<OfficeEnergyStatementResponse> create(
+  public ResponseEntity<EnergyStatementResponse> create(
       @PathVariable UUID officeId,
-      @Valid @RequestBody OfficeEnergyStatementRequest request,
+      @Valid @RequestBody EnergyStatementRequest request,
       UriComponentsBuilder uri) {
 
     var saved = service.create(officeId, request);

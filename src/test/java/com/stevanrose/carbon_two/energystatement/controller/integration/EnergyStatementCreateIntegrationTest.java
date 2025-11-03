@@ -1,15 +1,15 @@
-package com.stevanrose.carbon_two.officeenergystatement.controller.integration;
+package com.stevanrose.carbon_two.energystatement.controller.integration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
+import com.stevanrose.carbon_two.energystatement.repository.EnergyStatementRepository;
+import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementRequest;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
-import com.stevanrose.carbon_two.officeenergystatement.domain.HeatingFuelType;
-import com.stevanrose.carbon_two.officeenergystatement.repository.OfficeEnergyStatementRepository;
-import com.stevanrose.carbon_two.officeenergystatement.web.dto.OfficeEnergyStatementRequest;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,17 +22,17 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class OfficeEnergyStatementCreateIntegrationTest {
+public class EnergyStatementCreateIntegrationTest {
 
   @Autowired private MockMvc mvc;
 
   @Autowired private OfficeRepository officeRepository;
-  @Autowired private OfficeEnergyStatementRepository officeEnergyStatementRepository;
+  @Autowired private EnergyStatementRepository energyStatementRepository;
   @Autowired private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
-    officeEnergyStatementRepository.deleteAll();
+    energyStatementRepository.deleteAll();
     officeRepository.deleteAll();
   }
 
@@ -50,7 +50,7 @@ public class OfficeEnergyStatementCreateIntegrationTest {
                 .floorAreaM2(2500.00)
                 .build());
 
-    OfficeEnergyStatementRequest request = new OfficeEnergyStatementRequest();
+    EnergyStatementRequest request = new EnergyStatementRequest();
     request.setYear(2025);
     request.setMonth(10);
     request.setElectricityKwh(1234.0);
@@ -70,7 +70,7 @@ public class OfficeEnergyStatementCreateIntegrationTest {
 
   @AfterEach
   void tearDown() {
-    officeEnergyStatementRepository.deleteAll();
+    energyStatementRepository.deleteAll();
     officeRepository.deleteAll();
   }
 }

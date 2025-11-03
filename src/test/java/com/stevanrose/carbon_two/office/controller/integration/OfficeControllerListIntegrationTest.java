@@ -4,7 +4,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import lombok.SneakyThrows;
@@ -23,7 +22,6 @@ class OfficeControllerListIntegrationTest {
   @Autowired private MockMvc mvc;
 
   @Autowired private OfficeRepository officeRepository;
-  @Autowired private ObjectMapper objectMapper;
 
   @BeforeEach
   void setUp() {
