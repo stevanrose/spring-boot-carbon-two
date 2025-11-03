@@ -6,6 +6,7 @@ import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementResponse
 import com.stevanrose.carbon_two.office.domain.Office;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface EnergyStatementMapper {
@@ -18,4 +19,6 @@ public interface EnergyStatementMapper {
 
   @Mapping(target = "officeId", source = "office.id")
   EnergyStatementResponse toResponse(EnergyStatement entity);
+
+  void update(@MappingTarget EnergyStatement target, EnergyStatementRequest request);
 }

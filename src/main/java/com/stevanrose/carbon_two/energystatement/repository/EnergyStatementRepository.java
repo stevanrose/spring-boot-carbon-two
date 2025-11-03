@@ -14,4 +14,7 @@ public interface EnergyStatementRepository extends JpaRepository<EnergyStatement
   Page<EnergyStatement> findByOfficeId(UUID officeId, Pageable pageable);
 
   Optional<EnergyStatement> findByIdAndOfficeId(UUID id, UUID officeId);
+
+  Optional<EnergyStatement> findByOfficeIdAndYearAndMonth(
+      UUID officeId, Integer year, Integer month);
 }

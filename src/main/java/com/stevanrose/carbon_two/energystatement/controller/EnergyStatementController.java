@@ -85,4 +85,31 @@ public class EnergyStatementController {
             .toUri();
     return ResponseEntity.created(location).body(body);
   }
+
+  @PutMapping("/{year}/{month}")
+  @Operation(summary = "Upsert an office energy statement")
+  @ApiResponse(responseCode = "200", description = "Office energy statement upserted successfully")
+  @ApiResponse(responseCode = "400", description = "Invalid input data")
+  @ApiResponse(responseCode = "404", description = "Office not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<EnergyStatementResponse> upsert(
+      @PathVariable UUID officeId,
+      @PathVariable int year,
+      @PathVariable int month,
+      @Valid @RequestBody EnergyStatementRequest request,
+      UriComponentsBuilder uri) {
+
+    var result = service.upsert(officeId, year, month, request);
+    var body = mapper.toResponse(result.entity());
+
+    if (result.created()) {
+      var location =
+          uri.path("/api/offices/{officeId}/energy-statements/{id}")
+              .buildAndExpand(officeId, result.entity().getId())
+              .toUri();
+      return ResponseEntity.created(location).body(body);
+    } else {
+      return ResponseEntity.ok(body);
+    }
+  }
 }
