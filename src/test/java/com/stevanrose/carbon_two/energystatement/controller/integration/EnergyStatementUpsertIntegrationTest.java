@@ -1,8 +1,7 @@
 package com.stevanrose.carbon_two.energystatement.controller.integration;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
@@ -22,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class EnergyStatementCreateIntegrationTest {
+public class EnergyStatementUpsertIntegrationTest {
 
   @Autowired private MockMvc mvc;
 
@@ -57,15 +56,56 @@ public class EnergyStatementCreateIntegrationTest {
     request.setHeatingFuelType(HeatingFuelType.NONE);
 
     mvc.perform(
-            post("/api/offices/{id}/energy-statements", office.getId())
+            put(
+                    "/api/offices/{officeId}/energy-statements/{year}/{month}",
+                    office.getId(),
+                    request.getYear(),
+                    request.getMonth())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.officeId").value(office.getId().toString()))
-        .andExpect(jsonPath("$.year").value(2025))
-        .andExpect(jsonPath("$.month").value(10))
-        .andExpect(jsonPath("$.electricityKwh").value(1234.0))
-        .andExpect(jsonPath("$.heatingFuelType").value("NONE"));
+        .andExpect(status().isCreated());
+  }
+
+  @SneakyThrows
+  @Test
+  void should_update_existing_office_energy_statement() {
+
+    var office =
+        officeRepository.save(
+            Office.builder()
+                .code("LON-01")
+                .name("London HQ")
+                .address("10 Downing Street")
+                .gridRegionCode("GB-LDN")
+                .floorAreaM2(2500.00)
+                .build());
+
+    var energyStatement =
+        energyStatementRepository.save(
+            com.stevanrose.carbon_two.energystatement.domain.EnergyStatement.builder()
+                .office(office)
+                .year(2025)
+                .month(10)
+                .electricityKwh(1234.0)
+                .heatingFuelType(HeatingFuelType.NONE)
+                .build());
+
+    EnergyStatementRequest request = new EnergyStatementRequest();
+    request.setYear(2025);
+    request.setMonth(10);
+    request.setElectricityKwh(1500.0);
+    request.setHeatingFuelType(HeatingFuelType.GAS);
+
+    mvc.perform(
+            put(
+                    "/api/offices/{officeId}/energy-statements/{year}/{month}",
+                    office.getId(),
+                    request.getYear(),
+                    request.getMonth())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.heatingFuelType").value("GAS"));
   }
 
   @AfterEach

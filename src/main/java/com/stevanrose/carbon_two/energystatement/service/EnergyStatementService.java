@@ -46,30 +46,6 @@ public class EnergyStatementService {
   }
 
   @Transactional
-  public EnergyStatement create(UUID officeId, EnergyStatementRequest request) {
-
-    var office =
-        officeRepository
-            .findById(officeId)
-            .orElseThrow(
-                () -> new EntityNotFoundException("Office not found with id: " + officeId));
-
-    if (energyStatementRepository.existsByOfficeIdAndYearAndMonth(
-        officeId, request.getYear(), request.getMonth())) {
-      throw new IllegalStateException(
-          "Energy statement already exists for office id: "
-              + officeId
-              + ", year: "
-              + request.getYear()
-              + ", month: "
-              + request.getMonth());
-    }
-
-    var officeEnergyStatement = energyStatementMapper.toEntity(request, office);
-    return energyStatementRepository.save(officeEnergyStatement);
-  }
-
-  @Transactional
   public UpsertResult upsert(UUID officeId, int year, int month, EnergyStatementRequest request) {
     Office office =
         officeRepository

@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -60,30 +59,6 @@ public class EnergyStatementController {
         service.listByOfficeId(officeId, pageable).map(mapper::toResponse);
 
     return PageResponse.of(page);
-  }
-
-  @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  @Operation(summary = "Create a new office energy statement")
-  @ApiResponse(responseCode = "201", description = "Office energy statement created successfully")
-  @ApiResponse(responseCode = "400", description = "Invalid input data")
-  @ApiResponse(responseCode = "404", description = "Office not found")
-  @ApiResponse(
-      responseCode = "409",
-      description = "Energy statement already exists for the given month and year")
-  @ApiResponse(responseCode = "500", description = "Internal server error")
-  public ResponseEntity<EnergyStatementResponse> create(
-      @PathVariable UUID officeId,
-      @Valid @RequestBody EnergyStatementRequest request,
-      UriComponentsBuilder uri) {
-
-    var saved = service.create(officeId, request);
-    var body = mapper.toResponse(saved);
-    var location =
-        uri.path("/api/offices/{officeId}/energy-statements/{id}")
-            .buildAndExpand(officeId, saved.getId())
-            .toUri();
-    return ResponseEntity.created(location).body(body);
   }
 
   @PutMapping("/{year}/{month}")
