@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -86,5 +87,16 @@ public class EnergyStatementController {
     } else {
       return ResponseEntity.ok(body);
     }
+  }
+
+  @DeleteMapping("/{year}/{month}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @Operation(summary = "Delete an office energy statement")
+  @ApiResponse(responseCode = "204", description = "Office energy statement deleted successfully")
+  @ApiResponse(responseCode = "404", description = "Office or energy statement not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public void deleteByOfficeIdAndYearAndMonth(
+      @PathVariable UUID officeId, @PathVariable int year, @PathVariable int month) {
+    service.deleteByOfficeIdAndYearAndMonth(officeId, year, month);
   }
 }

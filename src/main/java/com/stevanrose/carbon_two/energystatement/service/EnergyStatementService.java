@@ -67,4 +67,18 @@ public class EnergyStatementService {
       return new UpsertResult(saved, true);
     }
   }
+
+  @Transactional
+  public void deleteByOfficeIdAndYearAndMonth(UUID officeId, int year, int month) {
+    long removed = energyStatementRepository.deleteByOfficeIdAndYearAndMonth(officeId, year, month);
+    if (removed == 0) {
+      throw new EntityNotFoundException(
+          "Energy statement not found for office id: "
+              + officeId
+              + ", year: "
+              + year
+              + ", month: "
+              + month);
+    }
+  }
 }
