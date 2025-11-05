@@ -17,4 +17,6 @@ public interface EnergyStatementRepository extends JpaRepository<EnergyStatement
 
   Optional<EnergyStatement> findByOfficeIdAndYearAndMonth(
       UUID officeId, Integer year, Integer month);
+
+  long deleteByOfficeIdAndYearAndMonth(UUID officeId, Integer year, Integer month);
 }
