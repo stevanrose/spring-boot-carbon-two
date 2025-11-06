@@ -5,12 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(
     name = "office",
-    uniqueConstraints = @UniqueConstraint(name = "uq_Office_code", columnNames = "code"))
+    uniqueConstraints = @UniqueConstraint(name = "uq_office_code", columnNames = "code"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,12 +40,15 @@ public class Office {
   @Column(name = "gridregioncode", nullable = false)
   private String gridRegionCode;
 
+  @Column(name = "flooraream2")
   private Double floorAreaM2;
 
-  @Column(nullable = false, updatable = false)
+  @Column(name = "created_at", nullable = false, updatable = false)
+  @CreationTimestamp
   private Instant createdAt;
 
-  @Column(nullable = false)
+  @Column(name = "updated_at", nullable = false)
+  @UpdateTimestamp
   private Instant updatedAt;
 
   @PrePersist

@@ -2,17 +2,17 @@
   "databaseChangeLog": [
     {
       "changeSet": {
-        "id": "table-Employee",
+        "id": "table-employee",
         "author": "Steve Rose",
         "changes": [
           {
             "createTable": {
-              "tableName": "Employee",
+              "tableName": "employee",
               "columns": [
                 {
                   "column": {
                     "name": "id",
-                    "type": "UUID",
+                    "type": "uuid",
                     "constraints": {
                       "nullable": false
                     },
@@ -22,7 +22,7 @@
                 {
                   "column": {
                     "name": "email",
-                    "type": "TEXT",
+                    "type": "text",
                     "constraints": {
                       "nullable": false
                     }
@@ -31,12 +31,12 @@
                 {
                   "column": {
                     "name": "department",
-                    "type": "TEXT"
+                    "type": "text"
                   }
                 },
                 {
                   "column": {
-                    "name": "employmentType",
+                    "name": "employmenttype",
                     "type": "employmenttype",
                     "constraints": {
                       "nullable": false
@@ -46,7 +46,7 @@
                 },
                 {
                   "column": {
-                    "name": "workPattern",
+                    "name": "workpattern",
                     "type": "workpattern",
                     "constraints": {
                       "nullable": false
@@ -56,14 +56,14 @@
                 },
                 {
                   "column": {
-                    "name": "officeId",
-                    "type": "UUID"
+                    "name": "officeid",
+                    "type": "uuid"
                   }
                 },
                 {
                   "column": {
-                    "name": "createdAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "created_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
                     },
@@ -72,11 +72,12 @@
                 },
                 {
                   "column": {
-                    "name": "updatedAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "updated_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
-                    }
+                    },
+                    "defaultValueComputed": "now()"
                   }
                 }
               ]
@@ -84,26 +85,26 @@
           },
           {
             "addPrimaryKey": {
-              "tableName": "Employee",
+              "tableName": "employee",
               "columnNames": "id",
-              "constraintName": "pk_Employee_id"
+              "constraintName": "pk_employee_id"
             }
           },
           {
             "addUniqueConstraint": {
-              "tableName": "Employee",
+              "tableName": "employee",
               "columnNames": "email",
-              "constraintName": "uq_Employee_email"
+              "constraintName": "uq_employee_email"
             }
           },
           {
             "createIndex": {
-              "tableName": "Employee",
-              "indexName": "idx_Employee_officeId",
+              "tableName": "employee",
+              "indexName": "idx_employee_officeid",
               "columns": [
                 {
                   "column": {
-                    "name": "officeId"
+                    "name": "officeid"
                   }
                 }
               ]

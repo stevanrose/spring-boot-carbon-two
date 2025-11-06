@@ -3,7 +3,7 @@ volumes:
     driver: local
 services:
   carbon_two_backend:
-    image: postgres
+    image: postgres:16-alpine
     volumes:
       - carbon_two_backend:/var/lib/postgresql/data
     environment:

@@ -7,31 +7,31 @@
         "changes": [
           {
             "addForeignKeyConstraint": {
-              "baseTableName": "Employee",
-              "baseColumnNames": "officeId",
-              "referencedTableName": "Office",
+              "baseTableName": "employee",
+              "baseColumnNames": "officeid",
+              "referencedTableName": "office",
               "referencedColumnNames": "id",
-              "constraintName": "fk_Employee_officeId__Office_id",
+              "constraintName": "fk_employee_officeid__office_id",
               "onDelete": "SET NULL"
             }
           },
           {
             "addForeignKeyConstraint": {
-              "baseTableName": "CommuteSurvey",
-              "baseColumnNames": "employeeId",
-              "referencedTableName": "Employee",
+              "baseTableName": "commutesurvey",
+              "baseColumnNames": "employeeid",
+              "referencedTableName": "employee",
               "referencedColumnNames": "id",
-              "constraintName": "fk_CommuteSurvey_employeeId__Employee_id",
+              "constraintName": "fk_commutesurvey_employeeid__employee_id",
               "onDelete": "CASCADE"
             }
           },
           {
             "addForeignKeyConstraint": {
-              "baseTableName": "OfficeEnergyStatement",
-              "baseColumnNames": "officeId",
-              "referencedTableName": "Office",
+              "baseTableName": "officeenergystatement",
+              "baseColumnNames": "officeid",
+              "referencedTableName": "office",
               "referencedColumnNames": "id",
-              "constraintName": "fk_OfficeEnergyStatement_officeId__Office_id",
+              "constraintName": "fk_officeenergystatement_officeid__office_id",
               "onDelete": "CASCADE"
             }
           }

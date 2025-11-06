@@ -1,6 +1,9 @@
 {
   "databaseChangeLog": [
     {
+      "objectQuotingStrategy": "LEGACY"
+    },
+    {
       "include": {
         "file": "db/changelog/000-extensions.json"
       }

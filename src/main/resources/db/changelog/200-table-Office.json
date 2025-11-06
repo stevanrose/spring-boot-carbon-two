@@ -7,12 +7,12 @@
         "changes": [
           {
             "createTable": {
-              "tableName": "Office",
+              "tableName": "office",
               "columns": [
                 {
                   "column": {
                     "name": "id",
-                    "type": "UUID",
+                    "type": "uuid",
                     "constraints": {
                       "nullable": false
                     },
@@ -22,7 +22,7 @@
                 {
                   "column": {
                     "name": "code",
-                    "type": "TEXT",
+                    "type": "text",
                     "constraints": {
                       "nullable": false
                     }
@@ -31,7 +31,7 @@
                 {
                   "column": {
                     "name": "name",
-                    "type": "TEXT",
+                    "type": "text",
                     "constraints": {
                       "nullable": false
                     }
@@ -40,13 +40,13 @@
                 {
                   "column": {
                     "name": "address",
-                    "type": "TEXT"
+                    "type": "text"
                   }
                 },
                 {
                   "column": {
-                    "name": "gridRegionCode",
-                    "type": "TEXT",
+                    "name": "gridregioncode",
+                    "type": "text",
                     "constraints": {
                       "nullable": false
                     }
@@ -54,14 +54,14 @@
                 },
                 {
                   "column": {
-                    "name": "floorAreaM2",
-                    "type": "DOUBLE PRECISION"
+                    "name": "flooraream2",
+                    "type": "double precision"
                   }
                 },
                 {
                   "column": {
-                    "name": "createdAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "created_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
                     },
@@ -70,11 +70,12 @@
                 },
                 {
                   "column": {
-                    "name": "updatedAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "updated_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
-                    }
+                    },
+                    "defaultValueComputed": "now()"
                   }
                 }
               ]
@@ -82,16 +83,16 @@
           },
           {
             "addPrimaryKey": {
-              "tableName": "Office",
+              "tableName": "office",
               "columnNames": "id",
-              "constraintName": "pk_Office_id"
+              "constraintName": "pk_office_id"
             }
           },
           {
             "addUniqueConstraint": {
-              "tableName": "Office",
+              "tableName": "office",
               "columnNames": "code",
-              "constraintName": "uq_Office_code"
+              "constraintName": "uq_office_code"
             }
           }
         ]

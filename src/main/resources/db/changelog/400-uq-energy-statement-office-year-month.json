@@ -7,8 +7,8 @@
         "changes": [
           {
             "addUniqueConstraint": {
-              "tableName": "OfficeEnergyStatement",
-              "columnNames": "officeId, year, month",
+              "tableName": "officeenergystatement",
+              "columnNames": "officeid, year, month",
               "constraintName": "uq_officeenergystatement_office_year_month"
             }
           }
