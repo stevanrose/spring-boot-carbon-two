@@ -2,17 +2,17 @@
   "databaseChangeLog": [
     {
       "changeSet": {
-        "id": "table-OfficeEnergyStatement",
+        "id": "table-officeenergystatement",
         "author": "Steve Rose",
         "changes": [
           {
             "createTable": {
-              "tableName": "OfficeEnergyStatement",
+              "tableName": "officeenergystatement",
               "columns": [
                 {
                   "column": {
                     "name": "id",
-                    "type": "UUID",
+                    "type": "uuid",
                     "constraints": {
                       "nullable": false
                     },
@@ -21,8 +21,8 @@
                 },
                 {
                   "column": {
-                    "name": "officeId",
-                    "type": "UUID",
+                    "name": "officeid",
+                    "type": "uuid",
                     "constraints": {
                       "nullable": false
                     }
@@ -31,7 +31,7 @@
                 {
                   "column": {
                     "name": "year",
-                    "type": "INTEGER",
+                    "type": "integer",
                     "constraints": {
                       "nullable": false
                     }
@@ -40,7 +40,7 @@
                 {
                   "column": {
                     "name": "month",
-                    "type": "INTEGER",
+                    "type": "integer",
                     "constraints": {
                       "nullable": false
                     }
@@ -48,8 +48,8 @@
                 },
                 {
                   "column": {
-                    "name": "electricityKwh",
-                    "type": "DOUBLE PRECISION",
+                    "name": "electricitykwh",
+                    "type": "double precision",
                     "constraints": {
                       "nullable": false
                     }
@@ -57,36 +57,36 @@
                 },
                 {
                   "column": {
-                    "name": "heatingFuelType",
-                    "type": "heatingfueltype",
+                    "name": "heatingfueltype",
+                    "type": "varchar(16)",
                     "constraints": {
                       "nullable": false
                     },
-                    "defaultValueComputed": "'none'::heatingfueltype"
+                    "defaultValue": "NONE"
                   }
                 },
                 {
                   "column": {
-                    "name": "heatingEnergyKwh",
-                    "type": "DOUBLE PRECISION"
+                    "name": "heatingenergykwh",
+                    "type": "double precision"
                   }
                 },
                 {
                   "column": {
-                    "name": "renewablePpasKwh",
-                    "type": "DOUBLE PRECISION"
+                    "name": "renewableppaskwh",
+                    "type": "double precision"
                   }
                 },
                 {
                   "column": {
                     "name": "notes",
-                    "type": "TEXT"
+                    "type": "text"
                   }
                 },
                 {
                   "column": {
-                    "name": "createdAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "created_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
                     },
@@ -95,11 +95,12 @@
                 },
                 {
                   "column": {
-                    "name": "updatedAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "updated_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
-                    }
+                    },
+                    "defaultValueComputed": "now()"
                   }
                 }
               ]
@@ -107,19 +108,19 @@
           },
           {
             "addPrimaryKey": {
-              "tableName": "OfficeEnergyStatement",
+              "tableName": "officeenergystatement",
               "columnNames": "id",
-              "constraintName": "pk_OfficeEnergyStatement_id"
+              "constraintName": "pk_officeenergystatement_id"
             }
           },
           {
             "createIndex": {
-              "tableName": "OfficeEnergyStatement",
-              "indexName": "idx_OfficeEnergyStatement_officeId_year_month",
+              "tableName": "officeenergystatement",
+              "indexName": "idx_officeenergystatement_officeid_year_month",
               "columns": [
                 {
                   "column": {
-                    "name": "officeId"
+                    "name": "officeid"
                   }
                 },
                 {

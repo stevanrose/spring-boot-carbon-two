@@ -2,17 +2,17 @@
   "databaseChangeLog": [
     {
       "changeSet": {
-        "id": "table-CommuteSurvey",
+        "id": "table-commutesurvey",
         "author": "Steve Rose",
         "changes": [
           {
             "createTable": {
-              "tableName": "CommuteSurvey",
+              "tableName": "commutesurvey",
               "columns": [
                 {
                   "column": {
                     "name": "id",
-                    "type": "UUID",
+                    "type": "uuid",
                     "constraints": {
                       "nullable": false
                     },
@@ -21,8 +21,8 @@
                 },
                 {
                   "column": {
-                    "name": "employeeId",
-                    "type": "UUID",
+                    "name": "employeeid",
+                    "type": "uuid",
                     "constraints": {
                       "nullable": false
                     }
@@ -30,8 +30,8 @@
                 },
                 {
                   "column": {
-                    "name": "surveyDate",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "surveydate",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
                     }
@@ -39,7 +39,7 @@
                 },
                 {
                   "column": {
-                    "name": "primaryMode",
+                    "name": "primarymode",
                     "type": "commutemode",
                     "constraints": {
                       "nullable": false
@@ -48,8 +48,8 @@
                 },
                 {
                   "column": {
-                    "name": "oneWayDistanceKm",
-                    "type": "DOUBLE PRECISION",
+                    "name": "onewaydistancekm",
+                    "type": "double precision",
                     "constraints": {
                       "nullable": false
                     }
@@ -57,8 +57,8 @@
                 },
                 {
                   "column": {
-                    "name": "daysPerWeekCommuting",
-                    "type": "INTEGER",
+                    "name": "daysperweekcommuting",
+                    "type": "integer",
                     "constraints": {
                       "nullable": false
                     }
@@ -66,20 +66,20 @@
                 },
                 {
                   "column": {
-                    "name": "carOccupancy",
-                    "type": "INTEGER"
+                    "name": "caroccupancy",
+                    "type": "integer"
                   }
                 },
                 {
                   "column": {
                     "name": "notes",
-                    "type": "TEXT"
+                    "type": "text"
                   }
                 },
                 {
                   "column": {
-                    "name": "createdAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "created_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
                     },
@@ -88,11 +88,12 @@
                 },
                 {
                   "column": {
-                    "name": "updatedAt",
-                    "type": "TIMESTAMP WITHOUT TIME ZONE",
+                    "name": "updated_at",
+                    "type": "timestamp without time zone",
                     "constraints": {
                       "nullable": false
-                    }
+                    },
+                    "defaultValueComputed": "now()"
                   }
                 }
               ]
@@ -100,24 +101,24 @@
           },
           {
             "addPrimaryKey": {
-              "tableName": "CommuteSurvey",
+              "tableName": "commutesurvey",
               "columnNames": "id",
-              "constraintName": "pk_CommuteSurvey_id"
+              "constraintName": "pk_commutesurvey_id"
             }
           },
           {
             "createIndex": {
-              "tableName": "CommuteSurvey",
-              "indexName": "idx_CommuteSurvey_employeeId_surveyDate",
+              "tableName": "commutesurvey",
+              "indexName": "idx_commutesurvey_employeeid_surveydate",
               "columns": [
                 {
                   "column": {
-                    "name": "employeeId"
+                    "name": "employeeid"
                   }
                 },
                 {
                   "column": {
-                    "name": "surveyDate"
+                    "name": "surveydate"
                   }
                 }
               ]

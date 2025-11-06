@@ -9,6 +9,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
@@ -16,7 +18,7 @@ import org.hibernate.annotations.UuidGenerator;
     name = "officeenergystatement",
     indexes = {
       @Index(
-          name = "idx_OfficeEnergyStatement_officeId_year_month",
+          name = "idx_officeenergystatement_officeId_year_month",
           columnList = "officeid, year, month")
     })
 @Getter
@@ -52,7 +54,7 @@ public class EnergyStatement {
   private Double electricityKwh;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "heatingfueltype", nullable = false)
+  @Column(name = "heatingfueltype", nullable = false, length = 16)
   private HeatingFuelType heatingFuelType = HeatingFuelType.NONE;
 
   @PositiveOrZero
@@ -65,17 +67,19 @@ public class EnergyStatement {
 
   private String notes;
 
-  @Column(nullable = false, updatable = false)
+  @Column(name = "created_at", nullable = false, updatable = false)
+  @CreationTimestamp
   private Instant createdAt;
 
-  @Column(nullable = false)
+  @Column(name = "updated_at", nullable = false)
+  @UpdateTimestamp
   private Instant updatedAt;
 
   @PrePersist
   public void prePersist() {
     Instant now = Instant.now();
-    this.createdAt = (this.createdAt == null) ? now : this.createdAt;
-    this.updatedAt = (this.updatedAt == null) ? now : this.updatedAt;
+    if (this.createdAt == null) this.createdAt = now;
+    if (this.updatedAt == null) this.updatedAt = now;
   }
 
   @PreUpdate
