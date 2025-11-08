@@ -1,8 +1,10 @@
 package com.stevanrose.carbon_two.employee.controller.integration;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.stevanrose.carbon_two.common.controller.BaseWebIntegrationTest;
+import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.domain.EmploymentType;
 import com.stevanrose.carbon_two.employee.domain.WorkPattern;
 import com.stevanrose.carbon_two.employee.repository.EmployeeRepository;
@@ -46,5 +48,39 @@ public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
     employeeRequest.setOfficeId(office.getId());
 
     postJson("/api/employees", employeeRequest).andExpect(status().isCreated());
+  }
+
+  @SneakyThrows
+  @Test
+  void should_list_employees_with_pagination() {
+
+    Office office =
+        officeRepository.save(
+            Office.builder()
+                .code("LON-01")
+                .name("London HQ")
+                .address("10 Downing Street")
+                .gridRegionCode("GB-LDN")
+                .floorAreaM2(2500.00)
+                .build());
+
+    Employee employee =
+        Employee.builder()
+            .email("john.doe@mail.com")
+            .department("Engineering")
+            .employmentType(EmploymentType.FULL_TIME)
+            .workPattern(WorkPattern.HYBRID)
+            .officeId(office.getId())
+            .build();
+
+    employeeRepository.save(employee);
+
+    getJson("/api/employees?page=0&size=10")
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.content").isArray())
+        .andExpect(jsonPath("$.content[0].email").value("john.doe@mail.com"))
+        .andExpect(jsonPath("$.content[0].department").value("Engineering"))
+        .andExpect(jsonPath("$.content[0].employmentType").value(EmploymentType.FULL_TIME.name()))
+        .andExpect(jsonPath("$.content[0].workPattern").value(WorkPattern.HYBRID.name()));
   }
 }

@@ -1,5 +1,6 @@
 package com.stevanrose.carbon_two.employee.controller;
 
+import com.stevanrose.carbon_two.common.paging.PageResponse;
 import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.service.EmployeeService;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
@@ -11,11 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
@@ -25,6 +25,19 @@ public class EmployeeController {
 
   private final EmployeeService employeeService;
   private final EmployeeMapper employeeMapper;
+
+  @GetMapping
+  @Operation(summary = "List Employees", description = "Retrieve a paginated list of employees.")
+  @ApiResponse(
+      responseCode = "200",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = EmployeeResponse.class)))
+  public PageResponse<EmployeeResponse> list(@ParameterObject Pageable pageable) {
+    var page = employeeService.list(pageable).map(employeeMapper::toResponse);
+    return PageResponse.of(page);
+  }
 
   @PostMapping
   @Operation(summary = "Create Employee", description = "Create a new employee.")

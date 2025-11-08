@@ -4,6 +4,8 @@ import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.repository.EmployeeRepository;
 import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,5 +19,10 @@ public class EmployeeService {
   @Transactional
   public Employee create(Employee employee) {
     return employeeRepository.save(employee);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<Employee> list(Pageable pageable) {
+    return employeeRepository.findAll(pageable);
   }
 }
