@@ -10,7 +10,6 @@ import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import com.stevanrose.carbon_two.office.web.dto.OfficeRequest;
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,11 +22,6 @@ import org.springframework.test.annotation.DirtiesContext;
 class OfficeControllerIntegrationTest extends BaseWebIntegrationTest {
 
   @Autowired private OfficeRepository officeRepository;
-
-  @BeforeEach
-  void setUp() {
-    officeRepository.deleteAll();
-  }
 
   @SneakyThrows
   @Test

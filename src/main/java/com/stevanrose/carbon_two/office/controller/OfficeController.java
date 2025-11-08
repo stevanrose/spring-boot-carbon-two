@@ -1,7 +1,5 @@
 package com.stevanrose.carbon_two.office.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.stevanrose.carbon_two.common.paging.PageResponse;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.service.OfficeService;
@@ -30,7 +28,6 @@ public class OfficeController {
 
   private final OfficeService officeService;
   private final OfficeMapper officeMapper;
-  private final ObjectMapper objectMapper = JsonMapper.builder().build();
 
   @GetMapping
   @Operation(summary = "List Offices", description = "Retrieve a paginated list of offices.")

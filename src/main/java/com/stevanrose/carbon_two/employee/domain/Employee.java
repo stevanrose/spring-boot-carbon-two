@@ -1,7 +1,6 @@
-package com.stevanrose.carbon_two.office.domain;
+package com.stevanrose.carbon_two.employee.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.*;
@@ -10,15 +9,13 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
-@Table(
-    name = "office",
-    uniqueConstraints = @UniqueConstraint(name = "uq_office_code", columnNames = "code"))
+@Table(name = "employee")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Office {
+public class Employee {
 
   @Id
   @GeneratedValue
@@ -26,22 +23,22 @@ public class Office {
   @Column(nullable = false, updatable = false)
   private UUID id;
 
-  @NotBlank
-  @Column(nullable = false)
-  private String code;
+  @Column(name = "email", nullable = false, unique = true)
+  private String email;
 
-  @NotBlank
-  @Column(nullable = false)
-  private String name;
+  @Column(name = "department")
+  private String department;
 
-  private String address;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "employmenttype", nullable = false)
+  private EmploymentType employmentType;
 
-  @NotBlank
-  @Column(name = "gridregioncode", nullable = false)
-  private String gridRegionCode;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "workpattern", nullable = false)
+  private WorkPattern workPattern;
 
-  @Column(name = "flooraream2")
-  private Double floorAreaM2;
+  @Column(name = "officeid")
+  private UUID officeId;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   @CreationTimestamp

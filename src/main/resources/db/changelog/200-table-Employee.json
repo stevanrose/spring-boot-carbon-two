@@ -37,21 +37,21 @@
                 {
                   "column": {
                     "name": "employmenttype",
-                    "type": "employmenttype",
+                    "type": "varchar(16)",
                     "constraints": {
                       "nullable": false
                     },
-                    "defaultValueComputed": "'full_time'::employmenttype"
+                    "defaultValue": "FULL_TIME"
                   }
                 },
                 {
                   "column": {
                     "name": "workpattern",
-                    "type": "workpattern",
+                    "type": "varchar(16)",
                     "constraints": {
                       "nullable": false
                     },
-                    "defaultValueComputed": "'hybrid'::workpattern"
+                    "defaultValue": "HYBRID"
                   }
                 },
                 {
@@ -108,6 +108,14 @@
                   }
                 }
               ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "employee",
+              "cascadeConstraints": true
             }
           }
         ]
