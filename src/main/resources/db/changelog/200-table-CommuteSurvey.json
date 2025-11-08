@@ -40,7 +40,7 @@
                 {
                   "column": {
                     "name": "primarymode",
-                    "type": "commutemode",
+                    "type": "varchar(32)",
                     "constraints": {
                       "nullable": false
                     }
@@ -122,6 +122,14 @@
                   }
                 }
               ]
+            }
+          }
+        ],
+        "rollback": [
+          {
+            "dropTable": {
+              "tableName": "commutesurvey",
+              "cascadeConstraints": true
             }
           }
         ]

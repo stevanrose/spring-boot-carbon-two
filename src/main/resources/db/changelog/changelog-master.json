@@ -10,26 +10,6 @@
     },
     {
       "include": {
-        "file": "db/changelog/100-enum-commutemode.json"
-      }
-    },
-    {
-      "include": {
-        "file": "db/changelog/100-enum-employmenttype.json"
-      }
-    },
-    {
-      "include": {
-        "file": "db/changelog/100-enum-heatingfueltype.json"
-      }
-    },
-    {
-      "include": {
-        "file": "db/changelog/100-enum-workpattern.json"
-      }
-    },
-    {
-      "include": {
         "file": "db/changelog/200-table-Office.json"
       }
     },
