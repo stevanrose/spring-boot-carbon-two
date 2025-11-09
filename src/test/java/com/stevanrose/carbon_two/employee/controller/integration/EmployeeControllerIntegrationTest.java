@@ -1,7 +1,7 @@
 package com.stevanrose.carbon_two.employee.controller.integration;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.stevanrose.carbon_two.common.controller.BaseWebIntegrationTest;
 import com.stevanrose.carbon_two.employee.domain.Employee;
@@ -82,5 +82,40 @@ public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
         .andExpect(jsonPath("$.content[0].department").value("Engineering"))
         .andExpect(jsonPath("$.content[0].employmentType").value(EmploymentType.FULL_TIME.name()))
         .andExpect(jsonPath("$.content[0].workPattern").value(WorkPattern.HYBRID.name()));
+  }
+
+  @SneakyThrows
+  @Test
+  void should_find_one_employee_entity_and_return_ok() {
+
+    Office office =
+        officeRepository.save(
+            Office.builder()
+                .code("LON-01")
+                .name("London HQ")
+                .address("10 Downing Street")
+                .gridRegionCode("GB-LDN")
+                .floorAreaM2(2500.00)
+                .build());
+
+    Employee employee =
+        Employee.builder()
+            .email("john.doe@mail.com")
+            .department("Engineering")
+            .employmentType(EmploymentType.FULL_TIME)
+            .workPattern(WorkPattern.HYBRID)
+            .officeId(office.getId())
+            .build();
+
+    employeeRepository.save(employee);
+
+    mvc.perform(get("/api/employees/{id}", employee.getId()))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith("application/json"))
+        .andExpect(jsonPath("$.id").value(employee.getId().toString()))
+        .andExpect(jsonPath("$.email").value("john.doe@mail.com"))
+        .andExpect(jsonPath("$.department").value("Engineering"))
+        .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
+        .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
   }
 }

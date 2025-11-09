@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +24,27 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class EmployeeController {
 
-  private final EmployeeService employeeService;
-  private final EmployeeMapper employeeMapper;
+  private final EmployeeService service;
+  private final EmployeeMapper mapper;
+
+  @GetMapping("/{id}")
+  @Operation(
+      summary = "Get Employee by ID",
+      description = "Retrieve a specific employee by its ID.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Employee found",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = EmployeeResponse.class)))
+  @ApiResponse(
+      responseCode = "404",
+      description = "Employee not found",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  public EmployeeResponse getOffice(@PathVariable UUID id) {
+    return mapper.toResponse(service.findById(id));
+  }
 
   @GetMapping
   @Operation(summary = "List Employees", description = "Retrieve a paginated list of employees.")
@@ -35,7 +55,7 @@ public class EmployeeController {
               mediaType = "application/json",
               schema = @Schema(implementation = EmployeeResponse.class)))
   public PageResponse<EmployeeResponse> list(@ParameterObject Pageable pageable) {
-    var page = employeeService.list(pageable).map(employeeMapper::toResponse);
+    var page = service.list(pageable).map(mapper::toResponse);
     return PageResponse.of(page);
   }
 
@@ -62,8 +82,8 @@ public class EmployeeController {
       content = @Content(schema = @Schema(implementation = Void.class)))
   public ResponseEntity<EmployeeResponse> create(
       @Valid @RequestBody EmployeeRequest request, UriComponentsBuilder uri) {
-    Employee saved = employeeService.create(employeeMapper.toEntity(request));
-    var response = employeeMapper.toResponse(saved);
+    Employee saved = service.create(mapper.toEntity(request));
+    var response = mapper.toResponse(saved);
     var location = uri.path("/api/employees/{id}").buildAndExpand(saved.getId()).toUri();
     return ResponseEntity.created(location).body(response);
   }
