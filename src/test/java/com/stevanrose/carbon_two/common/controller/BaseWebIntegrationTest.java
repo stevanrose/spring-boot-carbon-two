@@ -63,7 +63,7 @@ public abstract class BaseWebIntegrationTest {
 
         // Truncate in dependency-safe order (child → parent) to minimize locking
         //        jdbcTemplate.execute("TRUNCATE TABLE commutesurvey CASCADE");
-        //        jdbcTemplate.execute("TRUNCATE TABLE employee CASCADE");
+        jdbcTemplate.execute("TRUNCATE TABLE employee CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE officeenergystatement CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE office CASCADE");
 

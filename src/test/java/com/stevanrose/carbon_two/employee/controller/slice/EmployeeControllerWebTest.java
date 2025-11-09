@@ -19,6 +19,7 @@ import com.stevanrose.carbon_two.employee.service.EmployeeService;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeResponse;
 import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -120,6 +121,46 @@ class EmployeeControllerWebTest {
         .andExpect(jsonPath("$.size").value(1))
         .andExpect(jsonPath("$.totalElements").value(2))
         .andExpect(jsonPath("$.totalPages").value(2));
+  }
+
+  @SneakyThrows
+  @Test
+  void should_find_one_employee_by_id_and_return_ok() {
+
+    var id = UUID.randomUUID();
+    var officeId = UUID.randomUUID();
+
+    var entity =
+        Employee.builder()
+            .id(id)
+            .email("john.doe@mail.com")
+            .department("Engineering")
+            .employmentType(EmploymentType.FULL_TIME)
+            .workPattern(WorkPattern.HYBRID)
+            .officeId(officeId)
+            .build();
+
+    when(employeeService.findById(any(UUID.class))).thenReturn(entity);
+
+    mvc.perform(get("/api/employees/{id}", id))
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith("application/json"))
+        .andExpect(jsonPath("$.id").value(id.toString()))
+        .andExpect(jsonPath("$.email").value("john.doe@mail.com"))
+        .andExpect(jsonPath("$.department").value("Engineering"))
+        .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
+        .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
+  }
+
+  @SneakyThrows
+  @Test
+  void should_not_find_employee_by_id_and_return_not_not_found() {
+    var id = UUID.randomUUID();
+
+    when(employeeService.findById(any(UUID.class)))
+        .thenThrow(new EntityNotFoundException("Employee not found with id: " + id));
+
+    mvc.perform(get("/api/employees/{id}", id)).andExpect(status().isNotFound());
   }
 
   @TestConfiguration

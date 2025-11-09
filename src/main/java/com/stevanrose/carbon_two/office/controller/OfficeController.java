@@ -26,8 +26,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class OfficeController {
 
-  private final OfficeService officeService;
-  private final OfficeMapper officeMapper;
+  private final OfficeService service;
+  private final OfficeMapper mapper;
 
   @GetMapping
   @Operation(summary = "List Offices", description = "Retrieve a paginated list of offices.")
@@ -38,7 +38,7 @@ public class OfficeController {
               mediaType = "application/json",
               schema = @Schema(implementation = OfficePageResponse.class)))
   public PageResponse<OfficeResponse> list(@ParameterObject Pageable pageable) {
-    var page = officeService.list(pageable).map(officeMapper::toResponse);
+    var page = service.list(pageable).map(mapper::toResponse);
     return PageResponse.of(page);
   }
 
@@ -56,7 +56,7 @@ public class OfficeController {
       description = "Office not found",
       content = @Content(schema = @Schema(implementation = Void.class)))
   public OfficeResponse getOffice(@PathVariable UUID id) {
-    return officeMapper.toResponse(officeService.findById(id));
+    return mapper.toResponse(service.findById(id));
   }
 
   @PostMapping
@@ -82,8 +82,8 @@ public class OfficeController {
       content = @Content(schema = @Schema(implementation = Void.class)))
   public ResponseEntity<OfficeResponse> create(
       @Valid @RequestBody OfficeRequest request, UriComponentsBuilder uri) {
-    Office saved = officeService.create(officeMapper.toEntity(request));
-    var response = officeMapper.toResponse(saved);
+    Office saved = service.create(mapper.toEntity(request));
+    var response = mapper.toResponse(saved);
     var location = uri.path("/api/offices/{id}").buildAndExpand(saved.getId()).toUri();
     return ResponseEntity.created(location).body(response);
   }
@@ -107,7 +107,7 @@ public class OfficeController {
     update.setGridRegionCode(body.getGridRegionCode());
     update.setFloorAreaM2(body.getFloorAreaM2());
 
-    return officeMapper.toResponse(officeService.update(id, update));
+    return mapper.toResponse(service.update(id, update));
   }
 
   @DeleteMapping("/{id}")
@@ -123,7 +123,7 @@ public class OfficeController {
       description = "Office not found",
       content = @Content(schema = @Schema(implementation = Void.class)))
   public ResponseEntity<Void> deleteOffice(@PathVariable UUID id) {
-    officeService.delete(id);
+    service.delete(id);
     return ResponseEntity.noContent().build();
   }
 }

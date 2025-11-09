@@ -26,7 +26,6 @@ public class OfficeControllerFindOneWebTest {
 
   @Autowired MockMvc mvc;
   @Autowired OfficeService officeService;
-  @Autowired OfficeMapper officeMapper;
 
   @SneakyThrows
   @Test
