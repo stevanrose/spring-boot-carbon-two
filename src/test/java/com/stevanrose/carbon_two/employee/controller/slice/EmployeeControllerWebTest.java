@@ -5,8 +5,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -18,6 +17,7 @@ import com.stevanrose.carbon_two.employee.domain.WorkPattern;
 import com.stevanrose.carbon_two.employee.service.EmployeeService;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeResponse;
+import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -80,6 +80,45 @@ class EmployeeControllerWebTest {
     mvc.perform(post("/api/employees").contentType("application/json").content(json))
         .andExpect(status().isCreated())
         .andExpect(header().string("Location", "http://localhost/api/employees/" + id));
+  }
+
+  @SneakyThrows
+  @Test
+  void should_update_employee_and_return_ok() {
+
+    UUID id = UUID.randomUUID();
+    UUID officeId = UUID.randomUUID();
+
+    EmployeeUpdateRequest request = new EmployeeUpdateRequest();
+    request.setOfficeId(officeId);
+    request.setDepartment("Engineering");
+    request.setEmail("John.doe@mail.com");
+    request.setEmploymentType(EmploymentType.FULL_TIME);
+    request.setWorkPattern(WorkPattern.HYBRID);
+
+    Employee updated =
+        Employee.builder()
+            .id(id)
+            .email(request.getEmail())
+            .department(request.getDepartment())
+            .employmentType(request.getEmploymentType())
+            .workPattern(request.getWorkPattern())
+            .officeId(request.getOfficeId())
+            .build();
+
+    when(employeeService.update(any(UUID.class), any(EmployeeUpdateRequest.class)))
+        .thenReturn(updated);
+
+    mvc.perform(
+            put("/api/employees/{id}", id)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(id.toString()))
+        .andExpect(jsonPath("$.email").value(request.getEmail()))
+        .andExpect(jsonPath("$.department").value(request.getDepartment()))
+        .andExpect(jsonPath("$.employmentType").value(request.getEmploymentType().name()))
+        .andExpect(jsonPath("$.workPattern").value(request.getWorkPattern().name()));
   }
 
   @SneakyThrows
