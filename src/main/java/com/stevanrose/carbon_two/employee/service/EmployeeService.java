@@ -2,6 +2,7 @@ package com.stevanrose.carbon_two.employee.service;
 
 import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.repository.EmployeeRepository;
+import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
@@ -33,5 +34,19 @@ public class EmployeeService {
     return employeeRepository
         .findById(id)
         .orElseThrow(() -> new EntityNotFoundException("Employee not found with id: " + id));
+  }
+
+  @Transactional
+  public Employee update(UUID id, EmployeeUpdateRequest request) {
+
+    var existing = employeeRepository.findById(id);
+
+    if (existing.isPresent()) {
+      var entity = existing.get();
+      employeeMapper.update(entity, request);
+      return employeeRepository.save(entity);
+    } else {
+      throw new EntityNotFoundException("Employee not found with id: " + id);
+    }
   }
 }

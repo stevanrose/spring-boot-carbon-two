@@ -5,6 +5,7 @@ import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.service.EmployeeService;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeResponse;
+import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,7 +43,7 @@ public class EmployeeController {
       responseCode = "404",
       description = "Employee not found",
       content = @Content(schema = @Schema(implementation = Void.class)))
-  public EmployeeResponse getOffice(@PathVariable UUID id) {
+  public EmployeeResponse get(@PathVariable UUID id) {
     return mapper.toResponse(service.findById(id));
   }
 
@@ -86,5 +87,38 @@ public class EmployeeController {
     var response = mapper.toResponse(saved);
     var location = uri.path("/api/employees/{id}").buildAndExpand(saved.getId()).toUri();
     return ResponseEntity.created(location).body(response);
+  }
+
+  @PutMapping("/{id}")
+  @Operation(summary = "Update Employee", description = "Update an existing employee by its ID.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Employee updated",
+      content =
+          @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = EmployeeResponse.class)))
+  @ApiResponse(
+      responseCode = "400",
+      description = "Invalid input",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  @ApiResponse(
+      responseCode = "404",
+      description = "Employee not found",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  @ApiResponse(
+      responseCode = "500",
+      description = "Internal server error",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  public EmployeeResponse update(
+      @PathVariable UUID id, @Valid @RequestBody EmployeeUpdateRequest body) {
+    EmployeeUpdateRequest update = new EmployeeUpdateRequest();
+    update.setOfficeId(body.getOfficeId());
+    update.setDepartment(body.getDepartment());
+    update.setEmail(body.getEmail());
+    update.setEmploymentType(body.getEmploymentType());
+    update.setWorkPattern(body.getWorkPattern());
+
+    return mapper.toResponse(service.update(id, update));
   }
 }

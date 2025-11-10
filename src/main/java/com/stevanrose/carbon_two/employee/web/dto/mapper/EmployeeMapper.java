@@ -3,6 +3,7 @@ package com.stevanrose.carbon_two.employee.web.dto.mapper;
 import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeResponse;
+import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import org.mapstruct.*;
 
 @Mapper(
@@ -14,5 +15,5 @@ public interface EmployeeMapper {
 
   EmployeeResponse toResponse(Employee entity);
 
-  void update(@MappingTarget Employee entity, EmployeeRequest request);
+  void update(@MappingTarget Employee entity, EmployeeUpdateRequest request);
 }

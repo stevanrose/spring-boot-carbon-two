@@ -9,6 +9,7 @@ import com.stevanrose.carbon_two.employee.domain.EmploymentType;
 import com.stevanrose.carbon_two.employee.domain.WorkPattern;
 import com.stevanrose.carbon_two.employee.repository.EmployeeRepository;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
+import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import lombok.SneakyThrows;
@@ -25,30 +26,6 @@ public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
 
   @Autowired private EmployeeRepository employeeRepository;
   @Autowired private OfficeRepository officeRepository;
-
-  @SneakyThrows
-  @Test
-  void should_create_employee() {
-
-    var office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
-
-    EmployeeRequest employeeRequest = new EmployeeRequest();
-    employeeRequest.setEmail("john.doe@test.com");
-    employeeRequest.setDepartment("Engineering");
-    employeeRequest.setEmploymentType(EmploymentType.FULL_TIME);
-    employeeRequest.setWorkPattern(WorkPattern.HYBRID);
-    employeeRequest.setOfficeId(office.getId());
-
-    postJson("/api/employees", employeeRequest).andExpect(status().isCreated());
-  }
 
   @SneakyThrows
   @Test
@@ -117,5 +94,63 @@ public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
         .andExpect(jsonPath("$.department").value("Engineering"))
         .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
         .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
+  }
+
+  @SneakyThrows
+  @Test
+  void should_create_employee() {
+
+    var office =
+        officeRepository.save(
+            Office.builder()
+                .code("LON-01")
+                .name("London HQ")
+                .address("10 Downing Street")
+                .gridRegionCode("GB-LDN")
+                .floorAreaM2(2500.00)
+                .build());
+
+    EmployeeRequest employeeRequest = new EmployeeRequest();
+    employeeRequest.setEmail("john.doe@test.com");
+    employeeRequest.setDepartment("Engineering");
+    employeeRequest.setEmploymentType(EmploymentType.FULL_TIME);
+    employeeRequest.setWorkPattern(WorkPattern.HYBRID);
+    employeeRequest.setOfficeId(office.getId());
+
+    postJson("/api/employees", employeeRequest).andExpect(status().isCreated());
+  }
+
+  @SneakyThrows
+  @Test
+  void should_update_employee() {
+    Office office =
+        officeRepository.save(
+            Office.builder()
+                .code("LON-01")
+                .name("London HQ")
+                .address("10 Downing Street")
+                .gridRegionCode("GB-LDN")
+                .floorAreaM2(2500.00)
+                .build());
+
+    Employee employee =
+        employeeRepository.save(
+            Employee.builder()
+                .email("john.doe@mail.com")
+                .department("Engineering")
+                .employmentType(EmploymentType.FULL_TIME)
+                .workPattern(WorkPattern.HYBRID)
+                .officeId(office.getId())
+                .build());
+
+    EmployeeUpdateRequest request = new EmployeeUpdateRequest();
+    request.setOfficeId(office.getId());
+    request.setDepartment("Design");
+    request.setEmail("john.doe@mail.com");
+    request.setEmploymentType(EmploymentType.CONTRACT);
+    request.setWorkPattern(WorkPattern.REMOTE);
+
+    putJson(String.format("/api/employees/" + employee.getId()), request)
+        .andExpect(status().isOk());
   }
 }
