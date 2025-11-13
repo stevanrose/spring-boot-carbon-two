@@ -1,5 +1,7 @@
 package com.stevanrose.carbon_two.employee.controller.integration;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -152,5 +154,33 @@ public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
 
     putJson(String.format("/api/employees/" + employee.getId()), request)
         .andExpect(status().isOk());
+  }
+
+  @SneakyThrows
+  @Test
+  void should_delete_employee() {
+    Office office =
+        officeRepository.save(
+            Office.builder()
+                .code("LON-01")
+                .name("London HQ")
+                .address("10 Downing Street")
+                .gridRegionCode("GB-LDN")
+                .floorAreaM2(2500.00)
+                .build());
+
+    Employee employee =
+        employeeRepository.save(
+            Employee.builder()
+                .email("john.doe@mail.com")
+                .department("Engineering")
+                .employmentType(EmploymentType.FULL_TIME)
+                .workPattern(WorkPattern.HYBRID)
+                .officeId(office.getId())
+                .build());
+
+    mvc.perform(delete("/api/employees/{id}", employee.getId())).andExpect(status().isNoContent());
+
+    assertTrue(employeeRepository.findById(employee.getId()).isEmpty());
   }
 }

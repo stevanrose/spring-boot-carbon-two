@@ -7,6 +7,7 @@ import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,22 @@ public class EmployeeService {
       return employeeRepository.save(entity);
     } else {
       throw new EntityNotFoundException("Employee not found with id: " + id);
+    }
+  }
+
+  @Transactional
+  public void delete(UUID id) {
+
+    if (!employeeRepository.existsById(id)) {
+      throw new EntityNotFoundException("Employee not found with id: " + id);
+    }
+
+    try {
+      employeeRepository.deleteById(id);
+      employeeRepository.flush();
+    } catch (DataIntegrityViolationException e) {
+      throw new IllegalStateException(
+          "Cannot delete Employee with id: " + id + " due to existing references.");
     }
   }
 }
