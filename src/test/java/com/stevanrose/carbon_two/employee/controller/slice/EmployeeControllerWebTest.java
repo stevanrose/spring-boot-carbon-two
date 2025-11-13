@@ -3,8 +3,7 @@ package com.stevanrose.carbon_two.employee.controller.slice;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -200,6 +199,15 @@ class EmployeeControllerWebTest {
         .thenThrow(new EntityNotFoundException("Employee not found with id: " + id));
 
     mvc.perform(get("/api/employees/{id}", id)).andExpect(status().isNotFound());
+  }
+
+  @SneakyThrows
+  @Test
+  void should_delete_employee_and_return_deleted() {
+
+    UUID id = UUID.randomUUID();
+    mvc.perform(delete("/api/employees/{id}", id)).andExpect(status().isNoContent());
+    verify(employeeService).delete(id);
   }
 
   @TestConfiguration

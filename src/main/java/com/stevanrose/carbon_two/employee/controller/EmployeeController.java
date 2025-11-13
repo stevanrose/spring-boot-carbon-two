@@ -121,4 +121,16 @@ public class EmployeeController {
 
     return mapper.toResponse(service.update(id, update));
   }
+
+  @DeleteMapping("/{id}")
+  @Operation(summary = "Delete Employee", description = "Delete an existing employee by its ID.")
+  @ApiResponse(responseCode = "204", description = "Employee deleted", content = @Content)
+  @ApiResponse(
+      responseCode = "404",
+      description = "Employee not found",
+      content = @Content(schema = @Schema(implementation = Void.class)))
+  public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    service.delete(id);
+    return ResponseEntity.noContent().build();
+  }
 }
