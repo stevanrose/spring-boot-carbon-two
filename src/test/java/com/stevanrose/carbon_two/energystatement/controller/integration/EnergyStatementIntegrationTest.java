@@ -11,6 +11,7 @@ import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementRequest;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,101 +26,187 @@ public class EnergyStatementIntegrationTest extends BaseWebIntegrationTest {
   @Autowired private OfficeRepository officeRepository;
   @Autowired private EnergyStatementRepository energyStatementRepository;
 
-  @SneakyThrows
-  @Test
-  void should_create_office_energy_statement() {
+  @Nested
+  class Create {
 
-    var office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+    @SneakyThrows
+    @Test
+    void should_create_office_energy_statement() {
 
-    EnergyStatementRequest request = new EnergyStatementRequest();
-    request.setYear(2025);
-    request.setMonth(10);
-    request.setElectricityKwh(1234.0);
-    request.setHeatingFuelType(HeatingFuelType.NONE);
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    String uri =
-        String.format(
-            "/api/offices/%s/energy-statements/%d/%d",
-            office.getId(), request.getYear(), request.getMonth());
+      EnergyStatementRequest request = new EnergyStatementRequest();
+      request.setYear(2025);
+      request.setMonth(10);
+      request.setElectricityKwh(1234.0);
+      request.setHeatingFuelType(HeatingFuelType.NONE);
 
-    putJson(uri, request).andExpect(status().isCreated());
+      String uri =
+          String.format(
+              "/api/offices/%s/energy-statements/%d/%d",
+              office.getId(), request.getYear(), request.getMonth());
+
+      putJson(uri, request).andExpect(status().isCreated());
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_update_existing_office_energy_statement() {
+  @Nested
+  class List {
 
-    var office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+    @SneakyThrows
+    @Test
+    void should_list_energy_statements_with_pagination() {
 
-    energyStatementRepository.save(
-        com.stevanrose.carbon_two.energystatement.domain.EnergyStatement.builder()
-            .office(office)
-            .year(2025)
-            .month(10)
-            .electricityKwh(1234.0)
-            .heatingFuelType(HeatingFuelType.NONE)
-            .build());
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    EnergyStatementRequest request = new EnergyStatementRequest();
-    request.setYear(2025);
-    request.setMonth(10);
-    request.setElectricityKwh(1500.0);
-    request.setHeatingFuelType(HeatingFuelType.GAS);
+      energyStatementRepository.save(
+          EnergyStatement.builder()
+              .office(office)
+              .year(2025)
+              .month(10)
+              .electricityKwh(1234.0)
+              .heatingFuelType(HeatingFuelType.NONE)
+              .build());
 
-    String uri =
-        String.format(
-            "/api/offices/%s/energy-statements/%d/%d",
-            office.getId(), request.getYear(), request.getMonth());
+      String uri =
+          String.format("/api/offices/%s/energy-statements?page=0&size=10", office.getId());
 
-    putJson(uri, request)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.heatingFuelType").value("GAS"));
+      getJson(uri)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content").isArray())
+          .andExpect(jsonPath("$.content[0].year").value(2025))
+          .andExpect(jsonPath("$.content[0].month").value(10));
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_delete_energy_statement_and_return_no_content() {
+  @Nested
+  class FindOne {
+    @SneakyThrows
+    @Test
+    void should_find_one_energy_statement() {
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    var office =
-        officeRepository.save(
-            Office.builder().code("ENG-01").name("Engineering").gridRegionCode("GB-LDN").build());
+      var energyStatement =
+          energyStatementRepository.save(
+              EnergyStatement.builder()
+                  .office(office)
+                  .year(2025)
+                  .month(10)
+                  .electricityKwh(1234.0)
+                  .heatingFuelType(HeatingFuelType.NONE)
+                  .build());
 
-    var energyStatement =
-        energyStatementRepository.save(
-            EnergyStatement.builder()
-                .office(office)
-                .year(2025)
-                .month(10)
-                .electricityKwh(1000.0)
-                .heatingFuelType(HeatingFuelType.NONE)
-                .build());
+      String uri =
+          String.format(
+              "/api/offices/%s/energy-statements/%s", office.getId(), energyStatement.getId());
 
-    String uri =
-        String.format(
-            "/api/offices/%s/energy-statements/%d/%d",
-            office.getId(), energyStatement.getYear(), energyStatement.getMonth());
-    deleteJson(uri).andExpect(status().isNoContent());
+      getJson(uri)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.year").value(2025))
+          .andExpect(jsonPath("$.month").value(10))
+          .andExpect(jsonPath("$.electricityKwh").value(1234.0));
+    }
+  }
 
-    assertTrue(
-        energyStatementRepository
-            .findByOfficeIdAndYearAndMonth(
-                office.getId(), energyStatement.getYear(), energyStatement.getMonth())
-            .isEmpty());
+  @Nested
+  class Update {
+
+    @SneakyThrows
+    @Test
+    void should_update_existing_office_energy_statement() {
+
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
+
+      energyStatementRepository.save(
+          com.stevanrose.carbon_two.energystatement.domain.EnergyStatement.builder()
+              .office(office)
+              .year(2025)
+              .month(10)
+              .electricityKwh(1234.0)
+              .heatingFuelType(HeatingFuelType.NONE)
+              .build());
+
+      EnergyStatementRequest request = new EnergyStatementRequest();
+      request.setYear(2025);
+      request.setMonth(10);
+      request.setElectricityKwh(1500.0);
+      request.setHeatingFuelType(HeatingFuelType.GAS);
+
+      String uri =
+          String.format(
+              "/api/offices/%s/energy-statements/%d/%d",
+              office.getId(), request.getYear(), request.getMonth());
+
+      putJson(uri, request)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.heatingFuelType").value("GAS"));
+    }
+  }
+
+  @Nested
+  class Delete {
+
+    @SneakyThrows
+    @Test
+    void should_delete_energy_statement_and_return_no_content() {
+
+      var office =
+          officeRepository.save(
+              Office.builder().code("ENG-01").name("Engineering").gridRegionCode("GB-LDN").build());
+
+      var energyStatement =
+          energyStatementRepository.save(
+              EnergyStatement.builder()
+                  .office(office)
+                  .year(2025)
+                  .month(10)
+                  .electricityKwh(1000.0)
+                  .heatingFuelType(HeatingFuelType.NONE)
+                  .build());
+
+      String uri =
+          String.format(
+              "/api/offices/%s/energy-statements/%d/%d",
+              office.getId(), energyStatement.getYear(), energyStatement.getMonth());
+      deleteJson(uri).andExpect(status().isNoContent());
+
+      assertTrue(
+          energyStatementRepository
+              .findByOfficeIdAndYearAndMonth(
+                  office.getId(), energyStatement.getYear(), energyStatement.getMonth())
+              .isEmpty());
+    }
   }
 }

@@ -15,6 +15,7 @@ import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,158 +30,178 @@ public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
   @Autowired private EmployeeRepository employeeRepository;
   @Autowired private OfficeRepository officeRepository;
 
-  @SneakyThrows
-  @Test
-  void should_list_employees_with_pagination() {
+  @Nested
+  class Create {
 
-    Office office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+    @SneakyThrows
+    @Test
+    void should_create_employee() {
 
-    Employee employee =
-        Employee.builder()
-            .email("john.doe@mail.com")
-            .department("Engineering")
-            .employmentType(EmploymentType.FULL_TIME)
-            .workPattern(WorkPattern.HYBRID)
-            .officeId(office.getId())
-            .build();
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    employeeRepository.save(employee);
+      EmployeeRequest employeeRequest = new EmployeeRequest();
+      employeeRequest.setEmail("john.doe@test.com");
+      employeeRequest.setDepartment("Engineering");
+      employeeRequest.setEmploymentType(EmploymentType.FULL_TIME);
+      employeeRequest.setWorkPattern(WorkPattern.HYBRID);
+      employeeRequest.setOfficeId(office.getId());
 
-    getJson("/api/employees?page=0&size=10")
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.content").isArray())
-        .andExpect(jsonPath("$.content[0].email").value("john.doe@mail.com"))
-        .andExpect(jsonPath("$.content[0].department").value("Engineering"))
-        .andExpect(jsonPath("$.content[0].employmentType").value(EmploymentType.FULL_TIME.name()))
-        .andExpect(jsonPath("$.content[0].workPattern").value(WorkPattern.HYBRID.name()));
+      postJson("/api/employees", employeeRequest).andExpect(status().isCreated());
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_find_one_employee_entity_and_return_ok() {
+  @Nested
+  class List {
 
-    Office office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+    @SneakyThrows
+    @Test
+    void should_list_employees_with_pagination() {
 
-    Employee employee =
-        Employee.builder()
-            .email("john.doe@mail.com")
-            .department("Engineering")
-            .employmentType(EmploymentType.FULL_TIME)
-            .workPattern(WorkPattern.HYBRID)
-            .officeId(office.getId())
-            .build();
+      Office office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    employeeRepository.save(employee);
+      Employee employee =
+          Employee.builder()
+              .email("john.doe@mail.com")
+              .department("Engineering")
+              .employmentType(EmploymentType.FULL_TIME)
+              .workPattern(WorkPattern.HYBRID)
+              .officeId(office.getId())
+              .build();
 
-    mvc.perform(get("/api/employees/{id}", employee.getId()))
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith("application/json"))
-        .andExpect(jsonPath("$.id").value(employee.getId().toString()))
-        .andExpect(jsonPath("$.email").value("john.doe@mail.com"))
-        .andExpect(jsonPath("$.department").value("Engineering"))
-        .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
-        .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
+      employeeRepository.save(employee);
+
+      getJson("/api/employees?page=0&size=10")
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content").isArray())
+          .andExpect(jsonPath("$.content[0].email").value("john.doe@mail.com"))
+          .andExpect(jsonPath("$.content[0].department").value("Engineering"))
+          .andExpect(jsonPath("$.content[0].employmentType").value(EmploymentType.FULL_TIME.name()))
+          .andExpect(jsonPath("$.content[0].workPattern").value(WorkPattern.HYBRID.name()));
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_create_employee() {
+  @Nested
+  class FindOne {
+    @SneakyThrows
+    @Test
+    void should_find_one_employee_entity_and_return_ok() {
 
-    var office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+      Office office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    EmployeeRequest employeeRequest = new EmployeeRequest();
-    employeeRequest.setEmail("john.doe@test.com");
-    employeeRequest.setDepartment("Engineering");
-    employeeRequest.setEmploymentType(EmploymentType.FULL_TIME);
-    employeeRequest.setWorkPattern(WorkPattern.HYBRID);
-    employeeRequest.setOfficeId(office.getId());
+      Employee employee =
+          Employee.builder()
+              .email("john.doe@mail.com")
+              .department("Engineering")
+              .employmentType(EmploymentType.FULL_TIME)
+              .workPattern(WorkPattern.HYBRID)
+              .officeId(office.getId())
+              .build();
 
-    postJson("/api/employees", employeeRequest).andExpect(status().isCreated());
+      employeeRepository.save(employee);
+
+      mvc.perform(get("/api/employees/{id}", employee.getId()))
+          .andExpect(status().isOk())
+          .andExpect(content().contentTypeCompatibleWith("application/json"))
+          .andExpect(jsonPath("$.id").value(employee.getId().toString()))
+          .andExpect(jsonPath("$.email").value("john.doe@mail.com"))
+          .andExpect(jsonPath("$.department").value("Engineering"))
+          .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
+          .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_update_employee() {
-    Office office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+  @Nested
+  class Update {
 
-    Employee employee =
-        employeeRepository.save(
-            Employee.builder()
-                .email("john.doe@mail.com")
-                .department("Engineering")
-                .employmentType(EmploymentType.FULL_TIME)
-                .workPattern(WorkPattern.HYBRID)
-                .officeId(office.getId())
-                .build());
+    @SneakyThrows
+    @Test
+    void should_update_employee() {
+      Office office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    EmployeeUpdateRequest request = new EmployeeUpdateRequest();
-    request.setOfficeId(office.getId());
-    request.setDepartment("Design");
-    request.setEmail("john.doe@mail.com");
-    request.setEmploymentType(EmploymentType.CONTRACT);
-    request.setWorkPattern(WorkPattern.REMOTE);
+      Employee employee =
+          employeeRepository.save(
+              Employee.builder()
+                  .email("john.doe@mail.com")
+                  .department("Engineering")
+                  .employmentType(EmploymentType.FULL_TIME)
+                  .workPattern(WorkPattern.HYBRID)
+                  .officeId(office.getId())
+                  .build());
 
-    putJson(String.format("/api/employees/" + employee.getId()), request)
-        .andExpect(status().isOk());
+      EmployeeUpdateRequest request = new EmployeeUpdateRequest();
+      request.setOfficeId(office.getId());
+      request.setDepartment("Design");
+      request.setEmail("john.doe@mail.com");
+      request.setEmploymentType(EmploymentType.CONTRACT);
+      request.setWorkPattern(WorkPattern.REMOTE);
+
+      putJson(String.format("/api/employees/" + employee.getId()), request)
+          .andExpect(status().isOk());
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_delete_employee() {
-    Office office =
-        officeRepository.save(
-            Office.builder()
-                .code("LON-01")
-                .name("London HQ")
-                .address("10 Downing Street")
-                .gridRegionCode("GB-LDN")
-                .floorAreaM2(2500.00)
-                .build());
+  @Nested
+  class Delete {
 
-    Employee employee =
-        employeeRepository.save(
-            Employee.builder()
-                .email("john.doe@mail.com")
-                .department("Engineering")
-                .employmentType(EmploymentType.FULL_TIME)
-                .workPattern(WorkPattern.HYBRID)
-                .officeId(office.getId())
-                .build());
+    @SneakyThrows
+    @Test
+    void should_delete_employee() {
+      Office office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
 
-    mvc.perform(delete("/api/employees/{id}", employee.getId())).andExpect(status().isNoContent());
+      Employee employee =
+          employeeRepository.save(
+              Employee.builder()
+                  .email("john.doe@mail.com")
+                  .department("Engineering")
+                  .employmentType(EmploymentType.FULL_TIME)
+                  .workPattern(WorkPattern.HYBRID)
+                  .officeId(office.getId())
+                  .build());
 
-    assertTrue(employeeRepository.findById(employee.getId()).isEmpty());
+      mvc.perform(delete("/api/employees/{id}", employee.getId()))
+          .andExpect(status().isNoContent());
+
+      assertTrue(employeeRepository.findById(employee.getId()).isEmpty());
+    }
   }
 }
