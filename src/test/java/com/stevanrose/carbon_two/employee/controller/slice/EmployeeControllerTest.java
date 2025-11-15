@@ -35,7 +35,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = EmployeeController.class)
-class EmployeeControllerWebTest {
+class EmployeeControllerTest {
 
   @Autowired MockMvc mvc;
 
