@@ -1,5 +1,6 @@
 package com.stevanrose.carbon_two.commutesurvey.controller.integration;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.stevanrose.carbon_two.common.controller.integration.BaseControllerIntegrationTest;
@@ -113,6 +114,71 @@ public class CommuteSurveyControllerIntegrationTest extends BaseControllerIntegr
 
       String uri = String.format("/api/employees/%s/commute-surveys", employee.getId());
       putJson(uri, request).andExpect(status().isOk());
+    }
+  }
+
+  @Nested
+  class FindAndList {
+
+    @SneakyThrows
+    @Test
+    void should_list() {
+
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
+
+      var employee =
+          employeeRepository.save(
+              Employee.builder()
+                  .email("john.doe@mail.com")
+                  .department("Engineering")
+                  .employmentType(EmploymentType.FULL_TIME)
+                  .workPattern(WorkPattern.HYBRID)
+                  .officeId(office.getId())
+                  .build());
+
+      commuteSurveyRepository.save(
+          CommuteSurvey.builder()
+              .employee(employee)
+              .surveyDate(OffsetDateTime.now().minusDays(5))
+              .primaryMode(CommuteMode.CAR)
+              .oneWayDistanceKm(15.0)
+              .daysPerWeekCommuting(5)
+              .carOccupancy(1)
+              .notes("Initial survey")
+              .build());
+
+      commuteSurveyRepository.save(
+          CommuteSurvey.builder()
+              .employee(employee)
+              .surveyDate(OffsetDateTime.now().minusDays(10))
+              .primaryMode(CommuteMode.CAR)
+              .oneWayDistanceKm(15.0)
+              .daysPerWeekCommuting(5)
+              .carOccupancy(1)
+              .notes("Initial survey")
+              .build());
+
+      String uri =
+          String.format("/api/employees/%s/commute-surveys?page=0&size=1", employee.getId());
+
+      getJson(uri)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content").isArray())
+          .andExpect(jsonPath("$.content[0].employeeId").value(employee.getId().toString()))
+          .andExpect(jsonPath("$.content[0].primaryMode").value(CommuteMode.CAR.toString()))
+          .andExpect(jsonPath("$.page").value(0))
+          .andExpect(jsonPath("$.size").value(1))
+          .andExpect(jsonPath("$.totalElements").value(2))
+          .andExpect(jsonPath("$.totalPages").value(2));
+      ;
     }
   }
 }

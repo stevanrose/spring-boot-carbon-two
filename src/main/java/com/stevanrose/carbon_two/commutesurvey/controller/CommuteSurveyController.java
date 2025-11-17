@@ -1,5 +1,6 @@
 package com.stevanrose.carbon_two.commutesurvey.controller;
 
+import com.stevanrose.carbon_two.common.paging.PageResponse;
 import com.stevanrose.carbon_two.commutesurvey.service.CommuteSurveyService;
 import com.stevanrose.carbon_two.commutesurvey.web.dto.CommuteSurveyRequest;
 import com.stevanrose.carbon_two.commutesurvey.web.dto.CommuteSurveyResponse;
@@ -9,6 +10,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,5 +51,21 @@ public class CommuteSurveyController {
     } else {
       return ResponseEntity.ok(body);
     }
+  }
+
+  @GetMapping
+  @Operation(
+      summary = "List Commute Surveys by Employee ID",
+      description = "Retrieve a paginated list of commute surveys for a specific employee.")
+  @ApiResponse(responseCode = "200", description = "List of commute surveys retrieved successfully")
+  @ApiResponse(responseCode = "404", description = "Employee not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public PageResponse<CommuteSurveyResponse> listByEmployeeId(
+      @PathVariable UUID employeeId, @ParameterObject Pageable pageable) {
+
+    Page<CommuteSurveyResponse> page =
+        service.listByEmployeeId(employeeId, pageable).map(mapper::toResponse);
+
+    return PageResponse.of(page);
   }
 }

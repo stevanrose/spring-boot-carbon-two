@@ -25,6 +25,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 @WebMvcTest(controllers = CommuteSurveyController.class)
 @Import(CommuteSurveyControllerTest.MockConfig.class)
@@ -104,6 +108,45 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
       String uri = String.format("/api/employees/%s/commute-surveys", employeeId);
 
       putJson(uri, request).andExpect(status().isOk());
+    }
+  }
+
+  @Nested
+  class FindAndList {
+
+    @SneakyThrows
+    @Test
+    void should_list_with_pagination() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      var entity =
+          CommuteSurvey.builder()
+              .surveyDate(OffsetDateTime.now())
+              .primaryMode(CommuteMode.WALK)
+              .oneWayDistanceKm(5.0)
+              .daysPerWeekCommuting(5)
+              .employee(Employee.builder().id(employeeId).build())
+              .id(id)
+              .build();
+
+      PageRequest pageRequest = PageRequest.of(0, 1, Sort.by("surveyDate").descending());
+      Page<CommuteSurvey> page = new PageImpl<>(java.util.List.of(entity), pageRequest, 2);
+
+      when(service.listByEmployeeId(eq(employeeId), any())).thenReturn(page);
+
+      String uri = String.format("/api/employees/%s/commute-surveys", employeeId);
+
+      getJson(uri)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content").isArray())
+          .andExpect(jsonPath("$.content[0].employeeId").value(employeeId.toString()))
+          .andExpect(jsonPath("$.content[0].primaryMode").value(CommuteMode.WALK.toString()))
+          .andExpect(jsonPath("$.page").value(0))
+          .andExpect(jsonPath("$.size").value(1))
+          .andExpect(jsonPath("$.totalElements").value(2))
+          .andExpect(jsonPath("$.totalPages").value(2));
     }
   }
 
