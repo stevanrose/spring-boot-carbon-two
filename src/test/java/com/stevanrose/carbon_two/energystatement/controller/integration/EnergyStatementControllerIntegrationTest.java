@@ -3,7 +3,7 @@ package com.stevanrose.carbon_two.energystatement.controller.integration;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.stevanrose.carbon_two.common.controller.BaseWebIntegrationTest;
+import com.stevanrose.carbon_two.common.controller.integration.BaseControllerIntegrationTest;
 import com.stevanrose.carbon_two.energystatement.domain.EnergyStatement;
 import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
 import com.stevanrose.carbon_two.energystatement.repository.EnergyStatementRepository;
@@ -21,13 +21,13 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class EnergyStatementIntegrationTest extends BaseWebIntegrationTest {
+public class EnergyStatementControllerIntegrationTest extends BaseControllerIntegrationTest {
 
   @Autowired private OfficeRepository officeRepository;
   @Autowired private EnergyStatementRepository energyStatementRepository;
 
   @Nested
-  class Create {
+  class Upsert {
 
     @SneakyThrows
     @Test
@@ -55,6 +55,45 @@ public class EnergyStatementIntegrationTest extends BaseWebIntegrationTest {
               office.getId(), request.getYear(), request.getMonth());
 
       putJson(uri, request).andExpect(status().isCreated());
+    }
+
+    @SneakyThrows
+    @Test
+    void should_update_existing_office_energy_statement() {
+
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
+
+      energyStatementRepository.save(
+          com.stevanrose.carbon_two.energystatement.domain.EnergyStatement.builder()
+              .office(office)
+              .year(2025)
+              .month(10)
+              .electricityKwh(1234.0)
+              .heatingFuelType(HeatingFuelType.NONE)
+              .build());
+
+      EnergyStatementRequest request = new EnergyStatementRequest();
+      request.setYear(2025);
+      request.setMonth(10);
+      request.setElectricityKwh(1500.0);
+      request.setHeatingFuelType(HeatingFuelType.GAS);
+
+      String uri =
+          String.format(
+              "/api/offices/%s/energy-statements/%d/%d",
+              office.getId(), request.getYear(), request.getMonth());
+
+      putJson(uri, request)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.heatingFuelType").value("GAS"));
     }
   }
 
@@ -129,49 +168,6 @@ public class EnergyStatementIntegrationTest extends BaseWebIntegrationTest {
           .andExpect(jsonPath("$.year").value(2025))
           .andExpect(jsonPath("$.month").value(10))
           .andExpect(jsonPath("$.electricityKwh").value(1234.0));
-    }
-  }
-
-  @Nested
-  class Update {
-
-    @SneakyThrows
-    @Test
-    void should_update_existing_office_energy_statement() {
-
-      var office =
-          officeRepository.save(
-              Office.builder()
-                  .code("LON-01")
-                  .name("London HQ")
-                  .address("10 Downing Street")
-                  .gridRegionCode("GB-LDN")
-                  .floorAreaM2(2500.00)
-                  .build());
-
-      energyStatementRepository.save(
-          com.stevanrose.carbon_two.energystatement.domain.EnergyStatement.builder()
-              .office(office)
-              .year(2025)
-              .month(10)
-              .electricityKwh(1234.0)
-              .heatingFuelType(HeatingFuelType.NONE)
-              .build());
-
-      EnergyStatementRequest request = new EnergyStatementRequest();
-      request.setYear(2025);
-      request.setMonth(10);
-      request.setElectricityKwh(1500.0);
-      request.setHeatingFuelType(HeatingFuelType.GAS);
-
-      String uri =
-          String.format(
-              "/api/offices/%s/energy-statements/%d/%d",
-              office.getId(), request.getYear(), request.getMonth());
-
-      putJson(uri, request)
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$.heatingFuelType").value("GAS"));
     }
   }
 

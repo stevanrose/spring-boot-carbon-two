@@ -1,4 +1,4 @@
-package com.stevanrose.carbon_two.common.controller;
+package com.stevanrose.carbon_two.common.controller.integration;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public abstract class BaseWebIntegrationTest {
+public abstract class BaseControllerIntegrationTest {
 
   @Container
   static final PostgreSQLContainer<?> POSTGRES = PostgresContainerSingleton.getInstance();
@@ -62,7 +62,7 @@ public abstract class BaseWebIntegrationTest {
         jdbcTemplate.execute("SET lock_timeout = '5s'");
 
         // Truncate in dependency-safe order (child → parent) to minimize locking
-        //        jdbcTemplate.execute("TRUNCATE TABLE commutesurvey CASCADE");
+        jdbcTemplate.execute("TRUNCATE TABLE commutesurvey CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE employee CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE officeenergystatement CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE office CASCADE");

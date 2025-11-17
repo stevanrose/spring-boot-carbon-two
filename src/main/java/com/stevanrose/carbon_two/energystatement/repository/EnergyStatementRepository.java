@@ -9,8 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EnergyStatementRepository extends JpaRepository<EnergyStatement, UUID> {
 
-  boolean existsByOfficeIdAndYearAndMonth(UUID officeId, Integer year, Integer month);
-
   Page<EnergyStatement> findByOfficeId(UUID officeId, Pageable pageable);
 
   Optional<EnergyStatement> findByIdAndOfficeId(UUID id, UUID officeId);
