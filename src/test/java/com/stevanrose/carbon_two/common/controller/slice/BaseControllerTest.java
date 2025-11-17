@@ -1,5 +1,6 @@
 package com.stevanrose.carbon_two.common.controller.slice;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +15,10 @@ public abstract class BaseControllerTest {
 
   protected String json(Object value) throws Exception {
     return objectMapper.writeValueAsString(value);
+  }
+
+  protected ResultActions getJson(String url) throws Exception {
+    return mvc.perform(get(url).accept(MediaType.APPLICATION_JSON));
   }
 
   protected ResultActions putJson(String url, Object body) throws Exception {

@@ -5,8 +5,11 @@ import com.stevanrose.carbon_two.commutesurvey.repository.CommuteSurveyRepositor
 import com.stevanrose.carbon_two.commutesurvey.web.dto.CommuteSurveyRequest;
 import com.stevanrose.carbon_two.commutesurvey.web.dto.mapper.CommuteSurveyMapper;
 import com.stevanrose.carbon_two.employee.repository.EmployeeRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,4 +46,13 @@ public class CommuteSurveyService {
       return new UpsertResult(saved, false);
     }
   }
+
+  @Transactional(readOnly = true)
+    public Page<CommuteSurvey> listByEmployeeId(UUID employeeId, Pageable pageable) {
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new EntityNotFoundException("Employee not found with id: " + employeeId);
+        }
+
+        return commuteSurveyRepository.findByEmployeeId(employeeId, pageable);
+    }
 }
