@@ -7,10 +7,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stevanrose.carbon_two.energystatement.controller.EnergyStatementController;
 import com.stevanrose.carbon_two.energystatement.domain.EnergyStatement;
 import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
 import com.stevanrose.carbon_two.energystatement.service.EnergyStatementService;
+import com.stevanrose.carbon_two.energystatement.web.dto.EnergyStatementRequest;
 import com.stevanrose.carbon_two.energystatement.web.dto.mapper.EnergyStatementMapper;
 import com.stevanrose.carbon_two.office.domain.Office;
 import jakarta.persistence.EntityNotFoundException;
@@ -37,6 +39,7 @@ class EnergyStatementControllerTest {
 
   @Autowired MockMvc mvc;
   @Autowired EnergyStatementService service;
+  @Autowired ObjectMapper objectMapper;
 
   @Nested
   class Upsert {
@@ -60,10 +63,13 @@ class EnergyStatementControllerTest {
       when(service.upsert(eq(officeId), eq(2025), eq(10), any()))
           .thenReturn(new EnergyStatementService.UpsertResult(entity, true));
 
-      var json =
-          """
-                    {"year":2025,"month":10,"electricityKwh":1000.0,"heatingFuelType":"NONE"}
-                  """;
+      EnergyStatementRequest request = new EnergyStatementRequest();
+      request.setYear(2025);
+      request.setMonth(10);
+      request.setElectricityKwh(1000.0);
+      request.setHeatingFuelType(HeatingFuelType.NONE);
+
+      var json = objectMapper.writeValueAsString(request);
 
       mvc.perform(
               put("/api/offices/{officeId}/energy-statements/{year}/{month}", officeId, 2025, 10)
@@ -100,10 +106,13 @@ class EnergyStatementControllerTest {
       when(service.upsert(eq(officeId), eq(2025), eq(10), any()))
           .thenReturn(new EnergyStatementService.UpsertResult(entity, false));
 
-      var json =
-          """
-                    {"year":2025,"month":10,"electricityKwh":1500.0,"heatingFuelType":"GAS"}
-                  """;
+      EnergyStatementRequest request = new EnergyStatementRequest();
+      request.setYear(2025);
+      request.setMonth(10);
+      request.setElectricityKwh(1500.0);
+      request.setHeatingFuelType(HeatingFuelType.GAS);
+
+      var json = objectMapper.writeValueAsString(request);
 
       mvc.perform(
               put("/api/offices/{officeId}/energy-statements/{year}/{month}", officeId, 2025, 10)

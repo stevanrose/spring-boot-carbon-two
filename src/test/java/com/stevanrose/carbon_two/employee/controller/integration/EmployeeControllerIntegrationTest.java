@@ -5,7 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.stevanrose.carbon_two.common.controller.BaseWebIntegrationTest;
+import com.stevanrose.carbon_two.common.controller.integration.BaseControllerIntegrationTest;
 import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.domain.EmploymentType;
 import com.stevanrose.carbon_two.employee.domain.WorkPattern;
@@ -25,7 +25,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @SpringBootTest
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class EmployeeControllerIntegrationTest extends BaseWebIntegrationTest {
+public class EmployeeControllerIntegrationTest extends BaseControllerIntegrationTest {
 
   @Autowired private EmployeeRepository employeeRepository;
   @Autowired private OfficeRepository officeRepository;
