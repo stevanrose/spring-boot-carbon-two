@@ -82,4 +82,16 @@ public class CommuteSurveyController {
     var response = mapper.toResponse(entity);
     return ResponseEntity.ok(response);
   }
+
+  @DeleteMapping("/{id}")
+  @Operation(
+      summary = "Delete Commute Survey by ID",
+      description = "Delete a specific commute survey by its ID for a given employee.")
+  @ApiResponse(responseCode = "204", description = "Commute survey deleted successfully")
+  @ApiResponse(responseCode = "404", description = "Employee or commute survey not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@PathVariable UUID employeeId, @PathVariable UUID id) {
+    service.deleteByEmployeeIdAndId(employeeId, id);
+  }
 }

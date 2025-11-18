@@ -63,4 +63,13 @@ public class CommuteSurveyService {
                 new EntityNotFoundException(
                     "CommuteSurvey not found with id: " + id + " for employee id: " + employeeId));
   }
+
+  @Transactional
+  public void deleteByEmployeeIdAndId(UUID employeeId, UUID id) {
+    long deletedCount = commuteSurveyRepository.deleteByEmployeeIdAndId(employeeId, id);
+    if (deletedCount == 0) {
+      throw new EntityNotFoundException(
+          "CommuteSurvey not found with id: " + id + " for employee id: " + employeeId);
+    }
+  }
 }

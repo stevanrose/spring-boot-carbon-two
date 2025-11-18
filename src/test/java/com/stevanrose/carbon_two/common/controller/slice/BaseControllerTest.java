@@ -1,7 +1,6 @@
 package com.stevanrose.carbon_two.common.controller.slice;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +22,9 @@ public abstract class BaseControllerTest {
 
   protected ResultActions putJson(String url, Object body) throws Exception {
     return mvc.perform(put(url).contentType(MediaType.APPLICATION_JSON).content(json(body)));
+  }
+
+  protected ResultActions deleteJson(String url) throws Exception {
+    return mvc.perform(delete(url));
   }
 }

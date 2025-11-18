@@ -12,4 +12,6 @@ public interface CommuteSurveyRepository extends JpaRepository<CommuteSurvey, UU
   Page<CommuteSurvey> findByEmployeeId(UUID employeeId, Pageable pageable);
 
   Optional<CommuteSurvey> findByIdAndEmployeeId(UUID id, UUID employeeId);
+
+  long deleteByEmployeeIdAndId(UUID employeeId, UUID id);
 }
