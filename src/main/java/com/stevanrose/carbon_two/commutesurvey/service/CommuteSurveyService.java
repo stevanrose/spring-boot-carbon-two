@@ -31,12 +31,10 @@ public class CommuteSurveyService {
             .orElseThrow(() -> new IllegalArgumentException("Employee not found"));
 
     if (dto.id() == null) {
-      // CREATE
       var entity = mapper.toEntity(dto, employee);
       var saved = commuteSurveyRepository.save(entity);
       return new UpsertResult(saved, true);
     } else {
-      // UPDATE
       var existing =
           commuteSurveyRepository
               .findById(dto.id())
@@ -48,11 +46,21 @@ public class CommuteSurveyService {
   }
 
   @Transactional(readOnly = true)
-    public Page<CommuteSurvey> listByEmployeeId(UUID employeeId, Pageable pageable) {
-        if (!employeeRepository.existsById(employeeId)) {
-            throw new EntityNotFoundException("Employee not found with id: " + employeeId);
-        }
-
-        return commuteSurveyRepository.findByEmployeeId(employeeId, pageable);
+  public Page<CommuteSurvey> listByEmployeeId(UUID employeeId, Pageable pageable) {
+    if (!employeeRepository.existsById(employeeId)) {
+      throw new EntityNotFoundException("Employee not found with id: " + employeeId);
     }
+
+    return commuteSurveyRepository.findByEmployeeId(employeeId, pageable);
+  }
+
+  @Transactional(readOnly = true)
+  public CommuteSurvey findByIdAndEmployeeId(UUID id, UUID employeeId) {
+    return commuteSurveyRepository
+        .findByIdAndEmployeeId(id, employeeId)
+        .orElseThrow(
+            () ->
+                new EntityNotFoundException(
+                    "CommuteSurvey not found with id: " + id + " for employee id: " + employeeId));
+  }
 }

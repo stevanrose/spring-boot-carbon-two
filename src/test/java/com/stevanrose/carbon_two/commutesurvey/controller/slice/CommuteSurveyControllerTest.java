@@ -14,6 +14,7 @@ import com.stevanrose.carbon_two.commutesurvey.service.CommuteSurveyService;
 import com.stevanrose.carbon_two.commutesurvey.web.dto.CommuteSurveyRequest;
 import com.stevanrose.carbon_two.commutesurvey.web.dto.mapper.CommuteSurveyMapper;
 import com.stevanrose.carbon_two.employee.domain.Employee;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 import lombok.SneakyThrows;
@@ -147,6 +148,50 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
           .andExpect(jsonPath("$.size").value(1))
           .andExpect(jsonPath("$.totalElements").value(2))
           .andExpect(jsonPath("$.totalPages").value(2));
+    }
+
+    @SneakyThrows
+    @Test
+    void should_find_one_by_id() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      var entity =
+          CommuteSurvey.builder()
+              .surveyDate(OffsetDateTime.now())
+              .primaryMode(CommuteMode.WALK)
+              .oneWayDistanceKm(5.0)
+              .daysPerWeekCommuting(5)
+              .employee(Employee.builder().id(employeeId).build())
+              .id(id)
+              .build();
+
+      when(service.findByIdAndEmployeeId(eq(id), eq(employeeId))).thenReturn(entity);
+      String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
+
+      getJson(uri)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(id.toString()))
+          .andExpect(jsonPath("$.employeeId").value(employeeId.toString()))
+          .andExpect(jsonPath("$.primaryMode").value(CommuteMode.WALK.toString()));
+    }
+
+    @SneakyThrows
+    @Test
+    void should_not_find_one() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      when(service.findByIdAndEmployeeId(eq(id), eq(employeeId)))
+          .thenThrow(
+              new EntityNotFoundException(
+                  "CommuteSurvey not found with id: " + id + " for employee id: " + employeeId));
+
+      String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
+
+      getJson(uri).andExpect(status().isNotFound());
     }
   }
 
