@@ -240,4 +240,62 @@ public class CommuteSurveyControllerIntegrationTest extends BaseControllerIntegr
       getJson(uri).andExpect(status().isNotFound());
     }
   }
+
+  @Nested
+  class Delete {
+
+    @SneakyThrows
+    @Test
+    void should_delete() {
+
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
+
+      var employee =
+          employeeRepository.save(
+              Employee.builder()
+                  .email("john.doe@mail.com")
+                  .department("Engineering")
+                  .employmentType(EmploymentType.FULL_TIME)
+                  .workPattern(WorkPattern.HYBRID)
+                  .officeId(office.getId())
+                  .build());
+
+      var commuteSurvey =
+          commuteSurveyRepository.save(
+              CommuteSurvey.builder()
+                  .employee(employee)
+                  .surveyDate(OffsetDateTime.now().minusDays(5))
+                  .primaryMode(CommuteMode.CAR)
+                  .oneWayDistanceKm(15.0)
+                  .daysPerWeekCommuting(5)
+                  .carOccupancy(1)
+                  .notes("Initial survey")
+                  .build());
+
+      String uri =
+          String.format(
+              "/api/employees/%s/commute-surveys/%s", employee.getId(), commuteSurvey.getId());
+
+      deleteJson(uri).andExpect(status().isNoContent());
+    }
+
+    @SneakyThrows
+    @Test
+    void should_not_find_for_delete() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
+      deleteJson(uri).andExpect(status().isNotFound());
+    }
+  }
 }

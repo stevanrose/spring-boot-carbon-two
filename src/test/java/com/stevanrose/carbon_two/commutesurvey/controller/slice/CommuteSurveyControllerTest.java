@@ -2,8 +2,7 @@ package com.stevanrose.carbon_two.commutesurvey.controller.slice;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.stevanrose.carbon_two.common.controller.slice.BaseControllerTest;
@@ -192,6 +191,40 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
       String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
 
       getJson(uri).andExpect(status().isNotFound());
+    }
+  }
+
+  @Nested
+  class Delete {
+
+    @SneakyThrows
+    @Test
+    void should_delete_and_return_no_content() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
+
+      deleteJson(uri).andExpect(status().isNoContent());
+    }
+
+    @SneakyThrows
+    @Test
+    void should_not_find_for_delete() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      doThrow(
+              new EntityNotFoundException(
+                  "CommuteSurvey not found with id: " + id + " for employee id: " + employeeId))
+          .when(service)
+          .deleteByEmployeeIdAndId(eq(employeeId), eq(id));
+
+      String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
+
+      deleteJson(uri).andExpect(status().isNotFound());
     }
   }
 
