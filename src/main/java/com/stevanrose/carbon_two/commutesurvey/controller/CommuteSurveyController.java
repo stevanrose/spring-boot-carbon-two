@@ -68,4 +68,18 @@ public class CommuteSurveyController {
 
     return PageResponse.of(page);
   }
+
+  @GetMapping("/{id}")
+  @Operation(
+      summary = "Get Commute Survey by ID",
+      description = "Retrieve a specific commute survey by its ID for a given employee.")
+  @ApiResponse(responseCode = "200", description = "Commute survey retrieved successfully")
+  @ApiResponse(responseCode = "404", description = "Employee or commute survey not found")
+  @ApiResponse(responseCode = "500", description = "Internal server error")
+  public ResponseEntity<CommuteSurveyResponse> getById(
+      @PathVariable UUID employeeId, @PathVariable UUID id) {
+    var entity = service.findByIdAndEmployeeId(id, employeeId);
+    var response = mapper.toResponse(entity);
+    return ResponseEntity.ok(response);
+  }
 }

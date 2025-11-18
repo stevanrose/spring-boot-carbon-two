@@ -15,6 +15,7 @@ import com.stevanrose.carbon_two.employee.repository.EmployeeRepository;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.repository.OfficeRepository;
 import java.time.OffsetDateTime;
+import java.util.UUID;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -118,7 +119,7 @@ public class CommuteSurveyControllerIntegrationTest extends BaseControllerIntegr
   }
 
   @Nested
-  class FindAndList {
+  class Find {
 
     @SneakyThrows
     @Test
@@ -179,6 +180,64 @@ public class CommuteSurveyControllerIntegrationTest extends BaseControllerIntegr
           .andExpect(jsonPath("$.totalElements").value(2))
           .andExpect(jsonPath("$.totalPages").value(2));
       ;
+    }
+
+    @SneakyThrows
+    @Test
+    void should_find_one() {
+
+      var office =
+          officeRepository.save(
+              Office.builder()
+                  .code("LON-01")
+                  .name("London HQ")
+                  .address("10 Downing Street")
+                  .gridRegionCode("GB-LDN")
+                  .floorAreaM2(2500.00)
+                  .build());
+
+      var employee =
+          employeeRepository.save(
+              Employee.builder()
+                  .email("john.doe@mail.com")
+                  .department("Engineering")
+                  .employmentType(EmploymentType.FULL_TIME)
+                  .workPattern(WorkPattern.HYBRID)
+                  .officeId(office.getId())
+                  .build());
+
+      var commuteSurvey =
+          commuteSurveyRepository.save(
+              CommuteSurvey.builder()
+                  .employee(employee)
+                  .surveyDate(OffsetDateTime.now().minusDays(5))
+                  .primaryMode(CommuteMode.CAR)
+                  .oneWayDistanceKm(15.0)
+                  .daysPerWeekCommuting(5)
+                  .carOccupancy(1)
+                  .notes("Initial survey")
+                  .build());
+
+      String uri =
+          String.format(
+              "/api/employees/%s/commute-surveys/%s", employee.getId(), commuteSurvey.getId());
+
+      getJson(uri)
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.id").value(commuteSurvey.getId().toString()))
+          .andExpect(jsonPath("$.employeeId").value(employee.getId().toString()))
+          .andExpect(jsonPath("$.primaryMode").value(CommuteMode.CAR.toString()));
+    }
+
+    @SneakyThrows
+    @Test
+    void should_not_find_one() {
+
+      UUID employeeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      String uri = String.format("/api/employees/%s/commute-surveys/%s", employeeId, id);
+      getJson(uri).andExpect(status().isNotFound());
     }
   }
 }
