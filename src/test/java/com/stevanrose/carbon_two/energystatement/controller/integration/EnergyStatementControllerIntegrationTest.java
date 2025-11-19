@@ -43,16 +43,11 @@ public class EnergyStatementControllerIntegrationTest extends BaseControllerInte
                   .floorAreaM2(2500.00)
                   .build());
 
-      EnergyStatementRequest request = new EnergyStatementRequest();
-      request.setYear(2025);
-      request.setMonth(10);
-      request.setElectricityKwh(1234.0);
-      request.setHeatingFuelType(HeatingFuelType.NONE);
+      EnergyStatementRequest request =
+          new EnergyStatementRequest(
+              2025, 10, 1234.0, HeatingFuelType.GAS, 123.0, 123.0, "No notes");
 
-      String uri =
-          String.format(
-              "/api/offices/%s/energy-statements/%d/%d",
-              office.getId(), request.getYear(), request.getMonth());
+      String uri = String.format("/api/offices/%s/energy-statements", office.getId());
 
       putJson(uri, request).andExpect(status().isCreated());
     }
@@ -80,16 +75,11 @@ public class EnergyStatementControllerIntegrationTest extends BaseControllerInte
               .heatingFuelType(HeatingFuelType.NONE)
               .build());
 
-      EnergyStatementRequest request = new EnergyStatementRequest();
-      request.setYear(2025);
-      request.setMonth(10);
-      request.setElectricityKwh(1500.0);
-      request.setHeatingFuelType(HeatingFuelType.GAS);
+      EnergyStatementRequest request =
+          new EnergyStatementRequest(
+              2025, 10, 1234.0, HeatingFuelType.GAS, 123.0, 123.0, "No notes");
 
-      String uri =
-          String.format(
-              "/api/offices/%s/energy-statements/%d/%d",
-              office.getId(), request.getYear(), request.getMonth());
+      String uri = String.format("/api/offices/%s/energy-statements", office.getId());
 
       putJson(uri, request)
           .andExpect(status().isOk())

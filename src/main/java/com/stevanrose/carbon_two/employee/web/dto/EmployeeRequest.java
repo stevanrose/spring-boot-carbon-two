@@ -5,14 +5,19 @@ import com.stevanrose.carbon_two.employee.domain.WorkPattern;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
-import lombok.Data;
 
-@Data
-public class EmployeeRequest {
-
-  @NotBlank @Email private String email;
-  private String department;
-  private EmploymentType employmentType = EmploymentType.FULL_TIME;
-  private WorkPattern workPattern = WorkPattern.HYBRID;
-  private UUID officeId;
+public record EmployeeRequest(
+    @NotBlank @Email String email,
+    String department,
+    EmploymentType employmentType,
+    WorkPattern workPattern,
+    UUID officeId) {
+  public EmployeeRequest {
+    if (employmentType == null) {
+      employmentType = EmploymentType.FULL_TIME;
+    }
+    if (workPattern == null) {
+      workPattern = WorkPattern.HYBRID;
+    }
+  }
 }

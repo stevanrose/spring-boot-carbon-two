@@ -47,12 +47,13 @@ public class EmployeeControllerIntegrationTest extends BaseControllerIntegration
                   .floorAreaM2(2500.00)
                   .build());
 
-      EmployeeRequest employeeRequest = new EmployeeRequest();
-      employeeRequest.setEmail("john.doe@test.com");
-      employeeRequest.setDepartment("Engineering");
-      employeeRequest.setEmploymentType(EmploymentType.FULL_TIME);
-      employeeRequest.setWorkPattern(WorkPattern.HYBRID);
-      employeeRequest.setOfficeId(office.getId());
+      EmployeeRequest employeeRequest =
+          new EmployeeRequest(
+              "john.doe@test.com",
+              "Engineering",
+              EmploymentType.FULL_TIME,
+              WorkPattern.HYBRID,
+              office.getId());
 
       postJson("/api/employees", employeeRequest).andExpect(status().isCreated());
     }
@@ -160,12 +161,13 @@ public class EmployeeControllerIntegrationTest extends BaseControllerIntegration
                   .officeId(office.getId())
                   .build());
 
-      EmployeeUpdateRequest request = new EmployeeUpdateRequest();
-      request.setOfficeId(office.getId());
-      request.setDepartment("Design");
-      request.setEmail("john.doe@mail.com");
-      request.setEmploymentType(EmploymentType.CONTRACT);
-      request.setWorkPattern(WorkPattern.REMOTE);
+      EmployeeUpdateRequest request =
+          new EmployeeUpdateRequest(
+              "john.doe@mail.com",
+              "Engineering",
+              EmploymentType.CONTRACT,
+              WorkPattern.REMOTE,
+              office.getId());
 
       putJson(String.format("/api/employees/" + employee.getId()), request)
           .andExpect(status().isOk());

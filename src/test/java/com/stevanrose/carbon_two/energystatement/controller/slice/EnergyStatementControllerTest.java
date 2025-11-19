@@ -60,19 +60,16 @@ class EnergyStatementControllerTest {
               .heatingFuelType(HeatingFuelType.NONE)
               .build();
 
-      when(service.upsert(eq(officeId), eq(2025), eq(10), any()))
+      when(service.upsert(eq(officeId), any()))
           .thenReturn(new EnergyStatementService.UpsertResult(entity, true));
 
-      EnergyStatementRequest request = new EnergyStatementRequest();
-      request.setYear(2025);
-      request.setMonth(10);
-      request.setElectricityKwh(1000.0);
-      request.setHeatingFuelType(HeatingFuelType.NONE);
+      EnergyStatementRequest request =
+          new EnergyStatementRequest(2025, 10, 1000.0, HeatingFuelType.NONE, null, null, null);
 
       var json = objectMapper.writeValueAsString(request);
 
       mvc.perform(
-              put("/api/offices/{officeId}/energy-statements/{year}/{month}", officeId, 2025, 10)
+              put("/api/offices/{officeId}/energy-statements", officeId, 2025, 10)
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(json))
           .andExpect(status().isCreated())
@@ -103,19 +100,16 @@ class EnergyStatementControllerTest {
               .heatingFuelType(HeatingFuelType.GAS)
               .build();
 
-      when(service.upsert(eq(officeId), eq(2025), eq(10), any()))
+      when(service.upsert(eq(officeId), any()))
           .thenReturn(new EnergyStatementService.UpsertResult(entity, false));
 
-      EnergyStatementRequest request = new EnergyStatementRequest();
-      request.setYear(2025);
-      request.setMonth(10);
-      request.setElectricityKwh(1500.0);
-      request.setHeatingFuelType(HeatingFuelType.GAS);
+      EnergyStatementRequest request =
+          new EnergyStatementRequest(2025, 10, 1500.0, HeatingFuelType.GAS, null, null, null);
 
       var json = objectMapper.writeValueAsString(request);
 
       mvc.perform(
-              put("/api/offices/{officeId}/energy-statements/{year}/{month}", officeId, 2025, 10)
+              put("/api/offices/{officeId}/energy-statements", officeId, 2025, 10)
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(json))
           .andExpect(status().isOk())

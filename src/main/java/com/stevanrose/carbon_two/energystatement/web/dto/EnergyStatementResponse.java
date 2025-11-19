@@ -3,19 +3,16 @@ package com.stevanrose.carbon_two.energystatement.web.dto;
 import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
 import java.time.Instant;
 import java.util.UUID;
-import lombok.Data;
 
-@Data
-public class EnergyStatementResponse {
-  private UUID id;
-  private UUID officeId;
-  private Integer year;
-  private Integer month;
-  private Double electricityKwh;
-  private HeatingFuelType heatingFuelType;
-  private Double heatingEnergyKwh;
-  private Double renewablePpasKwh;
-  private String notes;
-  private Instant createdAt;
-  private Instant updatedAt;
-}
+public record EnergyStatementResponse(
+    UUID id,
+    UUID officeId,
+    Integer year,
+    Integer month,
+    Double electricityKwh,
+    HeatingFuelType heatingFuelType,
+    Double heatingEnergyKwh,
+    Double renewablePpasKwh,
+    String notes,
+    Instant createdAt,
+    Instant updatedAt) {}

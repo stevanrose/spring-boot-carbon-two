@@ -3,7 +3,6 @@ package com.stevanrose.carbon_two.office.controller;
 import com.stevanrose.carbon_two.common.paging.PageResponse;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.service.OfficeService;
-import com.stevanrose.carbon_two.office.web.dto.OfficePageResponse;
 import com.stevanrose.carbon_two.office.web.dto.OfficeRequest;
 import com.stevanrose.carbon_two.office.web.dto.OfficeResponse;
 import com.stevanrose.carbon_two.office.web.dto.OfficeUpdateRequest;
@@ -31,12 +30,7 @@ public class OfficeController {
 
   @GetMapping
   @Operation(summary = "List Offices", description = "Retrieve a paginated list of offices.")
-  @ApiResponse(
-      responseCode = "200",
-      content =
-          @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = OfficePageResponse.class)))
+  @ApiResponse(responseCode = "200", description = "List of offices retrieved successfully")
   public PageResponse<OfficeResponse> list(@ParameterObject Pageable pageable) {
     var page = service.list(pageable).map(mapper::toResponse);
     return PageResponse.of(page);
@@ -100,12 +94,9 @@ public class OfficeController {
       description = "Office not found",
       content = @Content(schema = @Schema(implementation = Void.class)))
   public OfficeResponse put(@PathVariable UUID id, @Valid @RequestBody OfficeRequest body) {
-    OfficeUpdateRequest update = new OfficeUpdateRequest();
-    update.setCode(body.getCode());
-    update.setName(body.getName());
-    update.setAddress(body.getAddress());
-    update.setGridRegionCode(body.getGridRegionCode());
-    update.setFloorAreaM2(body.getFloorAreaM2());
+    OfficeUpdateRequest update =
+        new OfficeUpdateRequest(
+            body.code(), body.name(), body.address(), body.gridRegionCode(), body.floorAreaM2());
 
     return mapper.toResponse(service.update(id, update));
   }

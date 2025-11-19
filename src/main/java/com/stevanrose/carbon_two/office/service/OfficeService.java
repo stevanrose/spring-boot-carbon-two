@@ -43,18 +43,17 @@ public class OfficeService {
 
     Office entity = findById(id);
 
-    if (request.getCode() != null && !request.getCode().equalsIgnoreCase(entity.getCode())) {
+    if (request.code() != null && !request.code().equalsIgnoreCase(entity.getCode())) {
 
       officeRepository
-          .findByCodeIgnoreCase(request.getCode())
+          .findByCodeIgnoreCase(request.code())
           .ifPresent(
               existing -> {
                 if (!existing.getId().equals(id)) {
-                  throw new IllegalStateException(
-                      "Office code already exists: " + request.getCode());
+                  throw new IllegalStateException("Office code already exists: " + request.code());
                 }
               });
-      entity.setCode(request.getCode());
+      entity.setCode(request.code());
       officeMapper.update(entity, request);
       return officeRepository.save(entity);
     }
