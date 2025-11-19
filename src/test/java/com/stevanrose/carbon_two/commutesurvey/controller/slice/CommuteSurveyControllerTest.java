@@ -41,7 +41,7 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
 
     @SneakyThrows
     @Test
-    void should_upsert_and_return_created() {
+    void should_create() {
 
       UUID employeeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -76,7 +76,7 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
 
     @SneakyThrows
     @Test
-    void should_upsert_and_return_ok() {
+    void should_update() {
 
       UUID employeeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -116,7 +116,7 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
 
     @SneakyThrows
     @Test
-    void should_list_with_pagination() {
+    void should_list() {
 
       UUID employeeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -151,7 +151,7 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
 
     @SneakyThrows
     @Test
-    void should_find_one_by_id() {
+    void should_find_one() {
 
       UUID employeeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -199,7 +199,7 @@ public class CommuteSurveyControllerTest extends BaseControllerTest {
 
     @SneakyThrows
     @Test
-    void should_delete_and_return_no_content() {
+    void should_delete() {
 
       UUID employeeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();

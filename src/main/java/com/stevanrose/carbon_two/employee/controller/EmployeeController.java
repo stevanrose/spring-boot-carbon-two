@@ -112,12 +112,6 @@ public class EmployeeController {
       content = @Content(schema = @Schema(implementation = Void.class)))
   public EmployeeResponse update(
       @PathVariable UUID id, @Valid @RequestBody EmployeeUpdateRequest body) {
-    //    EmployeeUpdateRequest update = new EmployeeUpdateRequest();
-    //    update.setOfficeId(body.getOfficeId());
-    //    update.setDepartment(body.getDepartment());
-    //    update.setEmail(body.getEmail());
-    //    update.setEmploymentType(body.getEmploymentType());
-    //    update.setWorkPattern(body.getWorkPattern());
 
     return mapper.toResponse(service.update(id, body));
   }

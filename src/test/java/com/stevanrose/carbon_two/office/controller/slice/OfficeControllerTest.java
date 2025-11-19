@@ -8,7 +8,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stevanrose.carbon_two.common.controller.slice.BaseControllerTest;
 import com.stevanrose.carbon_two.office.controller.OfficeController;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.service.OfficeService;
@@ -31,23 +31,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = OfficeController.class)
 @Import(OfficeControllerTest.MockConfig.class)
-class OfficeControllerTest {
+class OfficeControllerTest extends BaseControllerTest {
 
-  @Autowired MockMvc mvc;
   @Autowired OfficeService officeService;
-  @Autowired OfficeMapper officeMapper;
-  @Autowired private ObjectMapper objectMapper;
 
   @Nested
   class Create {
 
     @SneakyThrows
     @Test
-    void should_create_office_and_return_201_with_location_header() {
+    void should_create() {
 
       UUID id = UUID.randomUUID();
 
@@ -73,7 +69,9 @@ class OfficeControllerTest {
 
       var json = objectMapper.writeValueAsString(request);
 
-      mvc.perform(post("/api/offices").contentType(MediaType.APPLICATION_JSON).content(json))
+      var url = "/api/offices";
+
+      postJson(url, request)
           .andExpect(status().isCreated())
           .andExpect(header().string("Location", Matchers.matchesRegex(".*/api/offices/" + id)));
     }
@@ -84,7 +82,7 @@ class OfficeControllerTest {
 
     @SneakyThrows
     @Test
-    void should_list_offices_with_pagination() {
+    void should_list() {
 
       var office1 =
           Office.builder()
@@ -99,12 +97,8 @@ class OfficeControllerTest {
 
       when(officeService.list(any())).thenReturn(page);
 
-      mvc.perform(
-              get("/api/offices")
-                  .param("page", "0")
-                  .param("size", "1")
-                  .param("sort", "name,asc")
-                  .accept(MediaType.APPLICATION_JSON))
+      var url = "/api/offices?page=0&size=1&sort=name,asc";
+      getJson(url)
           .andExpect(status().isOk())
           .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
           .andExpect(jsonPath("$.content", hasSize(1)))
@@ -123,7 +117,7 @@ class OfficeControllerTest {
 
     @SneakyThrows
     @Test
-    void should_find_one_office_entity_and_return_ok() {
+    void should_find_one() {
 
       var id = UUID.randomUUID();
       var entity =
@@ -131,7 +125,8 @@ class OfficeControllerTest {
 
       when(officeService.findById(any(UUID.class))).thenReturn(entity);
 
-      mvc.perform(get("/api/offices/{id}", id))
+      var url = "/api/offices/" + id;
+      getJson(url)
           .andExpect(status().isOk())
           .andExpect(content().contentTypeCompatibleWith("application/json"))
           .andExpect(jsonPath("$.id").value(id.toString()))
@@ -142,13 +137,15 @@ class OfficeControllerTest {
 
     @SneakyThrows
     @Test
-    void should_not_find_one_office_entity_and_return_not_found() {
+    void should_not_find_one() {
 
       var id = UUID.randomUUID();
+
       when(officeService.findById(any(UUID.class)))
           .thenThrow(new EntityNotFoundException("Office not found with id: " + id));
 
-      mvc.perform(get("/api/offices/{id}", id)).andExpect(status().isNotFound());
+      var url = "/api/offices/" + id;
+      getJson(url).andExpect(status().isNotFound());
     }
   }
 
@@ -157,7 +154,7 @@ class OfficeControllerTest {
 
     @SneakyThrows
     @Test
-    void should_update_office_using_put_and_return_ok() {
+    void should_update() {
 
       UUID id = UUID.randomUUID();
 
@@ -177,10 +174,9 @@ class OfficeControllerTest {
       when(officeService.update(any(UUID.class), any(OfficeUpdateRequest.class)))
           .thenReturn(updated);
 
-      mvc.perform(
-              put("/api/offices/{id}", id)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(objectMapper.writeValueAsString(request)))
+      var url = "/api/offices/" + id;
+
+      putJson(url, request)
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(id.toString()))
           .andExpect(jsonPath("$.code").value(request.code()))
@@ -199,19 +195,22 @@ class OfficeControllerTest {
     void should_delete_office_and_return_deleted() {
 
       UUID id = UUID.randomUUID();
-      mvc.perform(delete("/api/offices/{id}", id)).andExpect(status().isNoContent());
-      verify(officeService).delete(id);
+
+      var url = "/api/offices/" + id;
+      deleteJson(url).andExpect(status().isNoContent());
     }
 
     @SneakyThrows
     @Test
-    void should_return_not_found_when_id_does_not_exist() {
+    void should_not_find_for_delete() {
 
       UUID id = UUID.randomUUID();
       doThrow(new EntityNotFoundException("Office not found with id: " + id))
           .when(officeService)
           .delete(id);
-      mvc.perform(delete("/api/offices/{id}", id))
+
+      var url = "/api/offices/" + id;
+      deleteJson(url)
           .andExpect(status().isNotFound())
           .andExpect(jsonPath("$.code").value("NOT_FOUND"));
     }

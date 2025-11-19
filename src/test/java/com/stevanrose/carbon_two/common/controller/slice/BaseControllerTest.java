@@ -16,6 +16,10 @@ public abstract class BaseControllerTest {
     return objectMapper.writeValueAsString(value);
   }
 
+  protected ResultActions postJson(String url, Object body) throws Exception {
+    return mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json(body)));
+  }
+
   protected ResultActions getJson(String url) throws Exception {
     return mvc.perform(get(url).accept(MediaType.APPLICATION_JSON));
   }
