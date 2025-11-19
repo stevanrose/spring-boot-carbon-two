@@ -46,16 +46,15 @@ public class EnergyStatementService {
   }
 
   @Transactional
-  public UpsertResult upsert(UUID officeId, int year, int month, EnergyStatementRequest request) {
+  public UpsertResult upsert(UUID officeId, EnergyStatementRequest request) {
     Office office =
         officeRepository
             .findById(officeId)
             .orElseThrow(() -> new EntityNotFoundException("Office not found: " + officeId));
 
-    request.setYear(year);
-    request.setMonth(month);
-
-    var existing = energyStatementRepository.findByOfficeIdAndYearAndMonth(officeId, year, month);
+    var existing =
+        energyStatementRepository.findByOfficeIdAndYearAndMonth(
+            officeId, request.year(), request.month());
     if (existing.isPresent()) {
       var entity = existing.get();
       energyStatementMapper.update(entity, request);

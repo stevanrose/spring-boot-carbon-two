@@ -62,7 +62,7 @@ public class EnergyStatementController {
     return PageResponse.of(page);
   }
 
-  @PutMapping("/{year}/{month}")
+  @PutMapping
   @Operation(summary = "Upsert an office energy statement")
   @ApiResponse(responseCode = "200", description = "Office energy statement upserted successfully")
   @ApiResponse(responseCode = "400", description = "Invalid input data")
@@ -70,12 +70,10 @@ public class EnergyStatementController {
   @ApiResponse(responseCode = "500", description = "Internal server error")
   public ResponseEntity<EnergyStatementResponse> upsert(
       @PathVariable UUID officeId,
-      @PathVariable int year,
-      @PathVariable int month,
       @Valid @RequestBody EnergyStatementRequest request,
       UriComponentsBuilder uri) {
 
-    var result = service.upsert(officeId, year, month, request);
+    var result = service.upsert(officeId, request);
     var body = mapper.toResponse(result.entity());
 
     if (result.created()) {

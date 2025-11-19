@@ -62,17 +62,26 @@ class EmployeeControllerTest {
             .officeId(officeId)
             .build();
 
-    var response = new EmployeeResponse();
-    response.setId(id);
+    var response =
+        new EmployeeResponse(
+            id,
+            "john.doe@mail.com",
+            "Engineering",
+            EmploymentType.FULL_TIME,
+            WorkPattern.HYBRID,
+            officeId,
+            null,
+            null);
 
     when(employeeService.create(any(Employee.class))).thenReturn(entity);
 
-    EmployeeRequest employeeRequest = new EmployeeRequest();
-    employeeRequest.setEmail("john.doe@test.com");
-    employeeRequest.setDepartment("Engineering");
-    employeeRequest.setEmploymentType(EmploymentType.FULL_TIME);
-    employeeRequest.setWorkPattern(WorkPattern.HYBRID);
-    employeeRequest.setOfficeId(officeId);
+    EmployeeRequest employeeRequest =
+        new EmployeeRequest(
+            "john.doe@test.com",
+            "Engineering",
+            EmploymentType.FULL_TIME,
+            WorkPattern.HYBRID,
+            officeId);
 
     var json = objectMapper.writeValueAsString(employeeRequest);
 
@@ -88,21 +97,22 @@ class EmployeeControllerTest {
     UUID id = UUID.randomUUID();
     UUID officeId = UUID.randomUUID();
 
-    EmployeeUpdateRequest request = new EmployeeUpdateRequest();
-    request.setOfficeId(officeId);
-    request.setDepartment("Engineering");
-    request.setEmail("John.doe@mail.com");
-    request.setEmploymentType(EmploymentType.FULL_TIME);
-    request.setWorkPattern(WorkPattern.HYBRID);
+    EmployeeUpdateRequest request =
+        new EmployeeUpdateRequest(
+            "John.doe@mail.com",
+            "Engineering",
+            EmploymentType.FULL_TIME,
+            WorkPattern.HYBRID,
+            officeId);
 
     Employee updated =
         Employee.builder()
             .id(id)
-            .email(request.getEmail())
-            .department(request.getDepartment())
-            .employmentType(request.getEmploymentType())
-            .workPattern(request.getWorkPattern())
-            .officeId(request.getOfficeId())
+            .email(request.email())
+            .department(request.department())
+            .employmentType(request.employmentType())
+            .workPattern(request.workPattern())
+            .officeId(request.officeId())
             .build();
 
     when(employeeService.update(any(UUID.class), any(EmployeeUpdateRequest.class)))
@@ -114,10 +124,10 @@ class EmployeeControllerTest {
                 .content(objectMapper.writeValueAsString(request)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.email").value(request.getEmail()))
-        .andExpect(jsonPath("$.department").value(request.getDepartment()))
-        .andExpect(jsonPath("$.employmentType").value(request.getEmploymentType().name()))
-        .andExpect(jsonPath("$.workPattern").value(request.getWorkPattern().name()));
+        .andExpect(jsonPath("$.email").value(request.email()))
+        .andExpect(jsonPath("$.department").value(request.department()))
+        .andExpect(jsonPath("$.employmentType").value(request.employmentType().name()))
+        .andExpect(jsonPath("$.workPattern").value(request.workPattern().name()));
   }
 
   @SneakyThrows

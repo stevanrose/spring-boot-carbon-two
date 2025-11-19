@@ -113,21 +113,17 @@ class OfficeControllerIntegrationTest extends BaseControllerIntegrationTest {
                   .floorAreaM2(2500.00)
                   .build());
 
-      OfficeRequest request = new OfficeRequest();
-      request.setCode("LON-02");
-      request.setName("London Office");
-      request.setAddress("Updated Address");
-      request.setGridRegionCode("GB-LDN-1");
-      request.setFloorAreaM2(1500.00);
+      OfficeRequest request =
+          new OfficeRequest("LON-02", "London Office", "Updated Address", "GB-LDN-1", 1500.00);
 
       putJson("/api/offices/" + office.getId(), request)
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(office.getId().toString()))
-          .andExpect(jsonPath("$.code").value(request.getCode()))
-          .andExpect(jsonPath("$.name").value(request.getName()))
-          .andExpect(jsonPath("$.address").value(request.getAddress()))
-          .andExpect(jsonPath("$.gridRegionCode").value(request.getGridRegionCode()))
-          .andExpect(jsonPath("$.floorAreaM2").value(request.getFloorAreaM2()));
+          .andExpect(jsonPath("$.code").value(request.code()))
+          .andExpect(jsonPath("$.name").value(request.name()))
+          .andExpect(jsonPath("$.address").value(request.address()))
+          .andExpect(jsonPath("$.gridRegionCode").value(request.gridRegionCode()))
+          .andExpect(jsonPath("$.floorAreaM2").value(request.floorAreaM2()));
     }
   }
 

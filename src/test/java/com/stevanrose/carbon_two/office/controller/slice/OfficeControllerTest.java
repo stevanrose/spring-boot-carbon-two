@@ -13,7 +13,6 @@ import com.stevanrose.carbon_two.office.controller.OfficeController;
 import com.stevanrose.carbon_two.office.domain.Office;
 import com.stevanrose.carbon_two.office.service.OfficeService;
 import com.stevanrose.carbon_two.office.web.dto.OfficeRequest;
-import com.stevanrose.carbon_two.office.web.dto.OfficeResponse;
 import com.stevanrose.carbon_two.office.web.dto.OfficeUpdateRequest;
 import com.stevanrose.carbon_two.office.web.dto.mapper.OfficeMapper;
 import jakarta.persistence.EntityNotFoundException;
@@ -53,17 +52,24 @@ class OfficeControllerTest {
       UUID id = UUID.randomUUID();
 
       var entity =
-          Office.builder().id(id).code("LON-01").name("London HQ").gridRegionCode("GB-LDN").build();
-
-      var resp = new OfficeResponse();
-      resp.setId(entity.getId());
+          Office.builder()
+              .id(id)
+              .code("LON-01")
+              .name("London HQ")
+              .address("123 High Street")
+              .floorAreaM2(1500.00)
+              .gridRegionCode("GB-LDN")
+              .build();
 
       when(officeService.create(any(Office.class))).thenReturn(entity);
 
-      OfficeRequest request = new OfficeRequest();
-      request.setCode(entity.getCode());
-      request.setName(entity.getName());
-      request.setGridRegionCode(entity.getGridRegionCode());
+      OfficeRequest request =
+          new OfficeRequest(
+              entity.getCode(),
+              entity.getName(),
+              entity.getAddress(),
+              entity.getGridRegionCode(),
+              entity.getFloorAreaM2());
 
       var json = objectMapper.writeValueAsString(request);
 
@@ -155,21 +161,17 @@ class OfficeControllerTest {
 
       UUID id = UUID.randomUUID();
 
-      OfficeRequest request = new OfficeRequest();
-      request.setCode("LON-01");
-      request.setName("London HQ");
-      request.setAddress("New Address");
-      request.setGridRegionCode("GB-LDN");
-      request.setFloorAreaM2(2500.00);
+      OfficeRequest request =
+          new OfficeRequest("LON-01", "London HQ", "New Address", "GB-LDN", 2500.00);
 
       Office updated =
           Office.builder()
               .id(id)
-              .code(request.getCode())
-              .name(request.getName())
-              .address(request.getAddress())
-              .gridRegionCode(request.getGridRegionCode())
-              .floorAreaM2(request.getFloorAreaM2())
+              .code(request.code())
+              .name(request.name())
+              .address(request.address())
+              .gridRegionCode(request.gridRegionCode())
+              .floorAreaM2(request.floorAreaM2())
               .build();
 
       when(officeService.update(any(UUID.class), any(OfficeUpdateRequest.class)))
@@ -181,11 +183,11 @@ class OfficeControllerTest {
                   .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(id.toString()))
-          .andExpect(jsonPath("$.code").value(request.getCode()))
-          .andExpect(jsonPath("$.name").value(request.getName()))
-          .andExpect(jsonPath("$.address").value(request.getAddress()))
-          .andExpect(jsonPath("$.gridRegionCode").value(request.getGridRegionCode()))
-          .andExpect(jsonPath("$.floorAreaM2").value(request.getFloorAreaM2()));
+          .andExpect(jsonPath("$.code").value(request.code()))
+          .andExpect(jsonPath("$.name").value(request.name()))
+          .andExpect(jsonPath("$.address").value(request.address()))
+          .andExpect(jsonPath("$.gridRegionCode").value(request.gridRegionCode()))
+          .andExpect(jsonPath("$.floorAreaM2").value(request.floorAreaM2()));
     }
   }
 
