@@ -4,10 +4,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stevanrose.carbon_two.common.controller.slice.BaseControllerTest;
 import com.stevanrose.carbon_two.energystatement.controller.EnergyStatementController;
 import com.stevanrose.carbon_two.energystatement.domain.EnergyStatement;
 import com.stevanrose.carbon_two.energystatement.domain.HeatingFuelType;
@@ -30,23 +29,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = EnergyStatementController.class)
 @Import(EnergyStatementControllerTest.MockConfig.class)
-class EnergyStatementControllerTest {
+class EnergyStatementControllerTest extends BaseControllerTest {
 
-  @Autowired MockMvc mvc;
   @Autowired EnergyStatementService service;
-  @Autowired ObjectMapper objectMapper;
 
   @Nested
   class Upsert {
 
     @SneakyThrows
     @Test
-    void should_create_energy_statement_and_return_created() {
+    void should_create() {
 
       UUID officeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -66,12 +61,9 @@ class EnergyStatementControllerTest {
       EnergyStatementRequest request =
           new EnergyStatementRequest(2025, 10, 1000.0, HeatingFuelType.NONE, null, null, null);
 
-      var json = objectMapper.writeValueAsString(request);
+      var url = "/api/offices/" + officeId + "/energy-statements";
 
-      mvc.perform(
-              put("/api/offices/{officeId}/energy-statements", officeId, 2025, 10)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(json))
+      putJson(url, request)
           .andExpect(status().isCreated())
           .andExpect(
               header()
@@ -86,7 +78,7 @@ class EnergyStatementControllerTest {
 
     @SneakyThrows
     @Test
-    void should_update_energy_statement_and_return_ok() {
+    void should_update() {
 
       UUID officeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -106,12 +98,8 @@ class EnergyStatementControllerTest {
       EnergyStatementRequest request =
           new EnergyStatementRequest(2025, 10, 1500.0, HeatingFuelType.GAS, null, null, null);
 
-      var json = objectMapper.writeValueAsString(request);
-
-      mvc.perform(
-              put("/api/offices/{officeId}/energy-statements", officeId, 2025, 10)
-                  .contentType(MediaType.APPLICATION_JSON)
-                  .content(json))
+      var url = "/api/offices/" + officeId + "/energy-statements";
+      putJson(url, request)
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(id.toString()))
           .andExpect(jsonPath("$.electricityKwh").value(1500.0))
@@ -124,7 +112,7 @@ class EnergyStatementControllerTest {
 
     @SneakyThrows
     @Test
-    void should_list_office_energy_statement_and_return_ok() {
+    void should_list() {
 
       UUID officeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -144,14 +132,14 @@ class EnergyStatementControllerTest {
 
       when(service.listByOfficeId(any(UUID.class), any(PageRequest.class))).thenReturn(page);
 
-      mvc.perform(
-              get("/api/offices/{officeId}/energy-statements", officeId)
-                  .param("page", "0")
-                  .param("size", "1")
-                  .param("sort", "year,desc")
-                  .param("sort", "month,desc")
-                  .accept(MediaType.APPLICATION_JSON))
+      var url =
+          "/api/offices/"
+              + officeId
+              + " /energy-statements?page=0&size=1&sort=year,desc&sort=month,desc";
+
+      getJson(url)
           .andExpect(status().isOk())
+          .andExpect(jsonPath("$.content", org.hamcrest.Matchers.hasSize(1)))
           .andExpect(jsonPath("$.content[0].id").value(id.toString()))
           .andExpect(jsonPath("$.content[0].officeId").value(officeId.toString()))
           .andExpect(jsonPath("$.content[0].year").value(2025))
@@ -168,7 +156,7 @@ class EnergyStatementControllerTest {
 
     @SneakyThrows
     @Test
-    void should_find_one_office_energy_statement_and_return_ok() {
+    void should_find_one() {
 
       UUID officeId = UUID.randomUUID();
       UUID id = UUID.randomUUID();
@@ -183,16 +171,31 @@ class EnergyStatementControllerTest {
               .build();
 
       when(service.findByIdAndOfficeId(any(UUID.class), any(UUID.class))).thenReturn(entity);
+      var url = "/api/offices/" + officeId + "/energy-statements/" + id;
 
-      mvc.perform(
-              get("/api/offices/{officeId}/energy-statements/{id}", officeId, id)
-                  .accept(MediaType.APPLICATION_JSON))
+      getJson(url)
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(id.toString()))
           .andExpect(jsonPath("$.officeId").value(officeId.toString()))
           .andExpect(jsonPath("$.year").value(2025))
           .andExpect(jsonPath("$.month").value(10))
           .andExpect(jsonPath("$.electricityKwh").value(1234.0));
+    }
+
+    @SneakyThrows
+    @Test
+    void should_not_find_one() {
+
+      UUID officeId = UUID.randomUUID();
+      UUID id = UUID.randomUUID();
+
+      doThrow(new EntityNotFoundException("Employee not found with id: " + id))
+          .when(service)
+          .findByIdAndOfficeId(any(UUID.class), any(UUID.class));
+
+      var url = "/api/offices/" + officeId + "/energy-statements/" + id;
+
+      getJson(url).andExpect(status().isNotFound());
     }
   }
 
@@ -201,29 +204,27 @@ class EnergyStatementControllerTest {
 
     @SneakyThrows
     @Test
-    void should_delete_energy_statement_and_return_no_content() {
+    void should_delete() {
 
       UUID officeId = UUID.randomUUID();
 
-      mvc.perform(
-              delete(
-                  "/api/offices/{officeId}/energy-statements/{year}/{month}", officeId, 2025, 10))
-          .andExpect(status().isNoContent());
+      var url = "/api/offices/" + officeId + "/energy-statements/2025/10";
+
+      deleteJson(url).andExpect(status().isNoContent());
     }
 
     @SneakyThrows
     @Test
-    void should_not_find_energy_statement_and_return_not_found() {
+    void should_not_find_for_delete() {
       UUID officeId = UUID.randomUUID();
 
       doThrow(new EntityNotFoundException("Energy statement not found"))
           .when(service)
           .deleteByOfficeIdAndYearAndMonth(officeId, 2025, 10);
 
-      mvc.perform(
-              delete(
-                  "/api/offices/{officeId}/energy-statements/{year}/{month}", officeId, 2025, 10))
-          .andExpect(status().isNotFound());
+      var url = "/api/offices/" + officeId + "/energy-statements/2025/10";
+
+      deleteJson(url).andExpect(status().isNotFound());
     }
   }
 

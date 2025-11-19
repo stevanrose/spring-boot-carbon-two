@@ -3,17 +3,16 @@ package com.stevanrose.carbon_two.common.controller.integration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stevanrose.carbon_two.common.controller.slice.BaseControllerTest;
 import com.stevanrose.carbon_two.common.support.PostgresContainerSingleton;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -23,7 +22,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Testcontainers
-public abstract class BaseControllerIntegrationTest {
+public abstract class BaseControllerIntegrationTest extends BaseControllerTest {
 
   @Container
   static final PostgreSQLContainer<?> POSTGRES = PostgresContainerSingleton.getInstance();
@@ -76,25 +75,5 @@ public abstract class BaseControllerIntegrationTest {
     } catch (Exception ignored) {
       /* ok during very first run */
     }
-  }
-
-  protected String json(Object value) throws Exception {
-    return objectMapper.writeValueAsString(value);
-  }
-
-  protected ResultActions postJson(String url, Object body) throws Exception {
-    return mvc.perform(post(url).contentType(MediaType.APPLICATION_JSON).content(json(body)));
-  }
-
-  protected ResultActions putJson(String url, Object body) throws Exception {
-    return mvc.perform(put(url).contentType(MediaType.APPLICATION_JSON).content(json(body)));
-  }
-
-  protected ResultActions getJson(String url) throws Exception {
-    return mvc.perform(get(url).accept(MediaType.APPLICATION_JSON));
-  }
-
-  protected ResultActions deleteJson(String url) throws Exception {
-    return mvc.perform(delete(url));
   }
 }

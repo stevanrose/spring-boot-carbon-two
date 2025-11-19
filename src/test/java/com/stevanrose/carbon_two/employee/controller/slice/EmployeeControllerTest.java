@@ -8,46 +8,41 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stevanrose.carbon_two.common.controller.slice.BaseControllerTest;
 import com.stevanrose.carbon_two.employee.controller.EmployeeController;
 import com.stevanrose.carbon_two.employee.domain.Employee;
 import com.stevanrose.carbon_two.employee.domain.EmploymentType;
 import com.stevanrose.carbon_two.employee.domain.WorkPattern;
 import com.stevanrose.carbon_two.employee.service.EmployeeService;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeRequest;
-import com.stevanrose.carbon_two.employee.web.dto.EmployeeResponse;
 import com.stevanrose.carbon_two.employee.web.dto.EmployeeUpdateRequest;
 import com.stevanrose.carbon_two.employee.web.dto.mapper.EmployeeMapper;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.UUID;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = EmployeeController.class)
-class EmployeeControllerTest {
-
-  @Autowired MockMvc mvc;
+@Import(EmployeeControllerTest.MockConfig.class)
+class EmployeeControllerTest extends BaseControllerTest {
 
   @Autowired EmployeeService employeeService;
 
-  @Autowired EmployeeMapper employeeMapper;
-
-  @Autowired private ObjectMapper objectMapper;
-
   @SneakyThrows
   @Test
-  void should_create_employee_and_return_201_with_location_header() {
+  void should_create() {
 
     UUID officeId = UUID.randomUUID();
     UUID id = UUID.randomUUID();
@@ -62,17 +57,6 @@ class EmployeeControllerTest {
             .officeId(officeId)
             .build();
 
-    var response =
-        new EmployeeResponse(
-            id,
-            "john.doe@mail.com",
-            "Engineering",
-            EmploymentType.FULL_TIME,
-            WorkPattern.HYBRID,
-            officeId,
-            null,
-            null);
-
     when(employeeService.create(any(Employee.class))).thenReturn(entity);
 
     EmployeeRequest employeeRequest =
@@ -83,16 +67,16 @@ class EmployeeControllerTest {
             WorkPattern.HYBRID,
             officeId);
 
-    var json = objectMapper.writeValueAsString(employeeRequest);
+    var url = "/api/employees";
 
-    mvc.perform(post("/api/employees").contentType("application/json").content(json))
+    postJson(url, employeeRequest)
         .andExpect(status().isCreated())
         .andExpect(header().string("Location", "http://localhost/api/employees/" + id));
   }
 
   @SneakyThrows
   @Test
-  void should_update_employee_and_return_ok() {
+  void should_update() {
 
     UUID id = UUID.randomUUID();
     UUID officeId = UUID.randomUUID();
@@ -118,10 +102,9 @@ class EmployeeControllerTest {
     when(employeeService.update(any(UUID.class), any(EmployeeUpdateRequest.class)))
         .thenReturn(updated);
 
-    mvc.perform(
-            put("/api/employees/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+    var url = "/api/employees/" + id;
+
+    putJson(url, request)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").value(id.toString()))
         .andExpect(jsonPath("$.email").value(request.email()))
@@ -132,7 +115,7 @@ class EmployeeControllerTest {
 
   @SneakyThrows
   @Test
-  void should_list_employees_with_pagination() {
+  void should_list() {
 
     UUID officeId = UUID.randomUUID();
     UUID id = UUID.randomUUID();
@@ -152,11 +135,7 @@ class EmployeeControllerTest {
 
     when(employeeService.list(any())).thenReturn(page);
 
-    mvc.perform(
-            get("/api/employees")
-                .param("page", "0")
-                .param("size", "1")
-                .accept(MediaType.APPLICATION_JSON))
+    getJson("/api/employees?page=0&size=10")
         .andExpect(status().isOk())
         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.content", hasSize(1)))
@@ -171,53 +150,81 @@ class EmployeeControllerTest {
         .andExpect(jsonPath("$.totalPages").value(2));
   }
 
-  @SneakyThrows
-  @Test
-  void should_find_one_employee_by_id_and_return_ok() {
+  @Nested
+  class Find {
 
-    var id = UUID.randomUUID();
-    var officeId = UUID.randomUUID();
+    @SneakyThrows
+    @Test
+    void should_find_one() {
 
-    var entity =
-        Employee.builder()
-            .id(id)
-            .email("john.doe@mail.com")
-            .department("Engineering")
-            .employmentType(EmploymentType.FULL_TIME)
-            .workPattern(WorkPattern.HYBRID)
-            .officeId(officeId)
-            .build();
+      var id = UUID.randomUUID();
+      var officeId = UUID.randomUUID();
 
-    when(employeeService.findById(any(UUID.class))).thenReturn(entity);
+      var entity =
+          Employee.builder()
+              .id(id)
+              .email("john.doe@mail.com")
+              .department("Engineering")
+              .employmentType(EmploymentType.FULL_TIME)
+              .workPattern(WorkPattern.HYBRID)
+              .officeId(officeId)
+              .build();
 
-    mvc.perform(get("/api/employees/{id}", id))
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith("application/json"))
-        .andExpect(jsonPath("$.id").value(id.toString()))
-        .andExpect(jsonPath("$.email").value("john.doe@mail.com"))
-        .andExpect(jsonPath("$.department").value("Engineering"))
-        .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
-        .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
+      when(employeeService.findById(any(UUID.class))).thenReturn(entity);
+
+      var url = "/api/employees/" + id;
+
+      getJson(url)
+          .andExpect(status().isOk())
+          .andExpect(content().contentTypeCompatibleWith("application/json"))
+          .andExpect(jsonPath("$.id").value(id.toString()))
+          .andExpect(jsonPath("$.email").value("john.doe@mail.com"))
+          .andExpect(jsonPath("$.department").value("Engineering"))
+          .andExpect(jsonPath("$.employmentType").value(EmploymentType.FULL_TIME.name()))
+          .andExpect(jsonPath("$.workPattern").value(WorkPattern.HYBRID.name()));
+    }
+
+    @SneakyThrows
+    @Test
+    void should_not_find_one() {
+      var id = UUID.randomUUID();
+
+      when(employeeService.findById(any(UUID.class)))
+          .thenThrow(new EntityNotFoundException("Employee not found with id: " + id));
+
+      var url = "/api/employees/" + id;
+
+      getJson(url).andExpect(status().isNotFound());
+    }
   }
 
-  @SneakyThrows
-  @Test
-  void should_not_find_employee_by_id_and_return_not_not_found() {
-    var id = UUID.randomUUID();
+  @Nested
+  class Delete {
+    @SneakyThrows
+    @Test
+    void should_delete() {
 
-    when(employeeService.findById(any(UUID.class)))
-        .thenThrow(new EntityNotFoundException("Employee not found with id: " + id));
+      UUID id = UUID.randomUUID();
+      var url = "/api/employees/" + id;
 
-    mvc.perform(get("/api/employees/{id}", id)).andExpect(status().isNotFound());
-  }
+      deleteJson(url).andExpect(status().isNoContent());
+    }
 
-  @SneakyThrows
-  @Test
-  void should_delete_employee_and_return_deleted() {
+    @SneakyThrows
+    @Test
+    void should_not_find_for_delete() {
 
-    UUID id = UUID.randomUUID();
-    mvc.perform(delete("/api/employees/{id}", id)).andExpect(status().isNoContent());
-    verify(employeeService).delete(id);
+      UUID id = UUID.randomUUID();
+
+      doThrow(
+              new IllegalStateException(
+                  "Cannot delete Employee with id: " + id + " due to existing references."))
+          .when(employeeService)
+          .delete(id);
+
+      var url = "/api/employees/" + id;
+      deleteJson(url).andExpect(status().isConflict());
+    }
   }
 
   @TestConfiguration
