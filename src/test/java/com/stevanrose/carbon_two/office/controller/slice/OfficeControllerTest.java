@@ -34,7 +34,7 @@ import org.springframework.http.MediaType;
 
 @WebMvcTest(controllers = OfficeController.class)
 @Import(OfficeControllerTest.MockConfig.class)
-class OfficeControllerTest extends BaseControllerTest {
+class OfficeControllerTest extends   {
 
   @Autowired OfficeService officeService;
 
