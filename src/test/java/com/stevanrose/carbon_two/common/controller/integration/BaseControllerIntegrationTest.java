@@ -1,7 +1,5 @@
 package com.stevanrose.carbon_two.common.controller.integration;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stevanrose.carbon_two.common.controller.slice.BaseControllerTest;
 import com.stevanrose.carbon_two.common.support.PostgresContainerSingleton;
